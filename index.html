@@ -19,9 +19,7 @@
 
         body {
             background-color: var(--rust-dark);
-            /* Текстура металлической сетки/листа в стиле Rust */
-            background-image: 
-                radial-gradient(circle at 2px 2px, #222 1px, transparent 0);
+            background-image: radial-gradient(circle at 2px 2px, #222 1px, transparent 0);
             background-size: 24px 24px;
             color: #fff;
             font-family: 'Roboto Condensed', sans-serif;
@@ -35,7 +33,7 @@
 
         .form-container {
             background-color: var(--rust-panel);
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent);
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.01) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.01) 75%, transparent 75%, transparent);
             background-size: 40px 40px;
             width: 100%;
             max-width: 600px;
@@ -43,7 +41,6 @@
             border: 1px solid var(--rust-border);
             position: relative;
             box-shadow: 0 0 60px rgba(0,0,0,1);
-            border-radius: 2px;
         }
 
         .terminal-header {
@@ -77,18 +74,12 @@
             letter-spacing: 2px;
             margin: 0 0 40px 0;
             color: #fff;
-            text-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
 
         .section {
             margin-bottom: 40px;
             border-left: 2px solid #222;
             padding-left: 20px;
-            transition: border-color 0.3s;
-        }
-
-        .section:focus-within {
-            border-color: var(--rust-red);
         }
 
         .section-header {
@@ -98,9 +89,6 @@
             color: var(--rust-red);
             letter-spacing: 3px;
             margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
         }
 
         .grid {
@@ -117,7 +105,6 @@
             font-size: 11px;
             text-transform: uppercase;
             color: var(--rust-text);
-            letter-spacing: 1px;
             font-weight: 700;
         }
 
@@ -131,14 +118,12 @@
             font-size: 16px;
             box-sizing: border-box;
             outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s;
         }
 
         input:focus, textarea:focus {
             border-color: var(--rust-red);
-            background-color: #000;
             box-shadow: 0 0 15px var(--rust-glow);
-            transform: translateX(5px);
         }
 
         .rules-wrapper {
@@ -157,24 +142,12 @@
             cursor: pointer;
             font-family: 'Oswald', sans-serif;
             font-size: 20px;
-            color: #fff;
         }
 
         .checkbox-container input {
             width: 26px;
             height: 26px;
             accent-color: var(--rust-red);
-            cursor: pointer;
-        }
-
-        .warning-text {
-            color: #777;
-            font-size: 12px;
-            margin-top: 15px;
-            line-height: 1.6;
-            max-width: 400px;
-            margin-left: auto;
-            margin-right: auto;
         }
 
         button {
@@ -188,24 +161,11 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            transition: all 0.2s;
             clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
         }
 
-        button:hover {
-            background-color: #e64a35;
-            transform: scale(1.02);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            background-color: #444;
-            cursor: not-allowed;
-            clip-path: none;
-        }
+        button:hover { background-color: #e64a35; }
+        button:disabled { background-color: #444; cursor: not-allowed; }
 
         #status {
             display: none;
@@ -213,94 +173,82 @@
             padding: 20px;
             text-align: center;
             font-family: 'Oswald', sans-serif;
-            font-size: 14px;
-            letter-spacing: 1px;
-            border: 1px solid;
         }
         
-        .success { color: #43b581; border-color: #43b581; background: rgba(67, 181, 129, 0.05); }
-        .error { color: var(--rust-red); border-color: var(--rust-red); background: rgba(206, 63, 43, 0.05); }
-
-        @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
-            .form-container { padding: 30px 20px; }
-        }
+        .success { color: #43b581; border: 1px solid #43b581; }
+        .error { color: var(--rust-red); border: 1px solid var(--rust-red); }
     </style>
 </head>
 <body>
 
 <div class="form-container">
     <div class="terminal-header"><div class="terminal-line"></div></div>
-    
     <h2>RECRUITMENT TERMINAL</h2>
     
     <form id="rustForm">
         <div class="section">
-            <div class="section-header">01 DATA_LINK</div>
+            <div class="section-header">01 ЛИЧНЫЕ ДАННЫЕ</div>
             <div class="grid">
                 <div class="field">
                     <label>Имя / Позывной</label>
-                    <input type="text" name="Nickname" required>
+                    <input type="text" name="Имя_Ник" required>
                 </div>
                 <div class="field">
                     <label>Возраст</label>
-                    <input type="number" name="Age" required min="12">
+                    <input type="number" name="Возраст" required>
                 </div>
             </div>
             <div class="field">
-                <label>Страна / Часовой пояс</label>
-                <input type="text" name="Location" required placeholder="Россия, МСК+0">
+                <label>Страна / Пояс</label>
+                <input type="text" name="Локация" required>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">02 AUTHENTICATION</div>
+            <div class="section-header">02 ИГРОВОЙ ПРОФИЛЬ</div>
             <div class="field">
                 <label>Steam Profile URL</label>
-                <input type="url" name="Steam_URL" required placeholder="https://steamcommunity.com/id/...">
+                <input type="url" name="Steam_Ссылка" required>
             </div>
             <div class="grid">
                 <div class="field">
-                    <label>Всего часов</label>
-                    <input type="number" name="Total_Hours" required>
+                    <label>Часы в Rust</label>
+                    <input type="number" name="Часы" required>
                 </div>
                 <div class="field">
-                    <label>Средний онлайн</label>
-                    <input type="text" name="Daily_Online" required placeholder="8ч / день">
+                    <label>Онлайн в день</label>
+                    <input type="text" name="Онлайн" required>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">03 SPECIFICATIONS</div>
+            <div class="section-header">03 ХАРАКТЕРИСТИКИ</div>
             <div class="field">
-                <label>Боевая роль</label>
-                <select name="Main_Role">
-                    <option value="Комбат">Комбат (PvP Core)</option>
-                    <option value="Билдер(запас)">Билдер (Construction)</option>
-                    <option value="Фермер">Фермер (Plants/Tea)</option>
-                    <option value="Фармер">Фармер (Resource Gathering)</option>
-                    <option value="Электрик(запас)">Электрик (Industrial)</option>
+                <label>Предпочтительная роль</label>
+                <select name="Роль">
+                    <option>Комбат</option>
+                    <option>Билдер(запас)</option>
+                    <option>Фермер</option>
+                    <option>Фармер</option>
+                    <option>Электрик(запас)</option>
                 </select>
             </div>
             <div class="field">
-                <label>Оружие (Spray / Distance)</label>
-                <input type="text" name="Gun_Skills" required placeholder="AK-47 (150m), MP5 (100m)">
+                <label>Стрельба (Оружие/Дистанция)</label>
+                <input type="text" name="Навыки_Оружия" required>
             </div>
             <div class="field">
-                <label>История кланов</label>
-                <textarea name="Clan_History" rows="3" required placeholder="Где играли ранее и причины исключения/ухода..."></textarea>
+                <label>Опыт в кланах</label>
+                <textarea name="История_Кланов" rows="3" required></textarea>
             </div>
         </div>
 
         <div class="rules-wrapper">
             <label class="checkbox-container">
-                <input type="checkbox" name="Verified" value="YES" required>
+                <input type="checkbox" name="Правила_Приняты" value="Да" required>
                 ПОДТВЕРЖДАЮ ЛИЧНОСТЬ
             </label>
-            <div class="warning-text">
-                Любая попытка использования ПО, макросов или обмана системы приведет к немедленной блокировке в базе данных клана.
-            </div>
         </div>
 
         <button type="submit" id="submitBtn">ОТПРАВИТЬ ДАННЫЕ</button>
@@ -313,20 +261,18 @@
     const status = document.getElementById("status");
     const btn = document.getElementById("submitBtn");
 
-    form.addEventListener("submit", async function(event) {
-        event.preventDefault();
+    form.addEventListener("submit", function(e) {
+        e.preventDefault();
         btn.disabled = true;
-        btn.innerText = "TRANSFERRING...";
-        
-        const data = new FormData(event.target);
+        btn.innerText = "ОТПРАВКА...";
         
         fetch("https://formspree.io/f/mgorwppo", {
             method: "POST",
-            body: data,
+            body: new FormData(form),
             headers: { 'Accept': 'application/json' }
-        }).then(response => {
-            if (response.ok) {
-                status.innerHTML = "ПЕРЕДАЧА ЗАВЕРШЕНА. ВАШ ТИКЕТ БУДЕТ РАССМОТРЕН В БЛИЖАЙШЕЕ ВРЕМЯ.";
+        }).then(res => {
+            if (res.ok) {
+                status.innerHTML = "ДАННЫЕ ПРИНЯТЫ. ТИКЕТ БУДЕТ РАССМОТРЕН В БЛИЖАЙШЕЕ ВРЕМЯ.";
                 status.className = "success";
                 status.style.display = "block";
                 form.reset();
@@ -335,7 +281,7 @@
                 throw new Error();
             }
         }).catch(() => {
-            status.innerHTML = "ОШИБКА ПЕРЕДАЧИ. ПОВТОРИТЕ ПОПЫТКУ.";
+            status.innerHTML = "ОШИБКА. ПРОВЕРЬТЕ СОЕДИНЕНИЕ.";
             status.className = "error";
             status.style.display = "block";
             btn.disabled = false;
