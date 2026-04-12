@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подача заявки</title>
+    <style>
+        body {
+            background-color: #0f1011;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #1a1c1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+            border: 1px solid #333;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #7289da;
+            text-transform: uppercase;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #b9bbbe;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background-color: #2f3136;
+            border: 1px solid #202225;
+            border-radius: 5px;
+            color: #fff;
+            box-sizing: border-box;
+            outline: none;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #5865f2;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #3c45a5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Тикет</h2>
+    <form id="ticketForm">
+        <div class="form-group">
+            <label>Ссылка на Steam профиль</label>
+            <input type="url" id="steamLink" required>
+        </div>
+        <div class="form-group">
+            <label>Кол-во часов</label>
+            <input type="number" id="hours" required>
+        </div>
+        <div class="form-group">
+            <label>На какую роль претендуете</label>
+            <select id="role" required>
+                <option value="Комбат">Комбат</option>
+                <option value="Билдер (запас)">Билдер (запас)</option>
+                <option value="Фермер">Фермер</option>
+                <option value="Фармер">Фармер</option>
+                <option value="Электрик (запас)">Электрик (запас)</option>
+            </select>
+        </div>
+        <button type="submit" id="submitBtn">Отправить тикет</button>
+    </form>
+</div>
+
+<script>
+    document.getElementById('ticketForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.innerText = 'Отправка...';
+
+        const webhookURL = "https://discord.com/api/webhooks/1492978139666583562/2C1wx17GQ81g0o8gBg3nspUkXC50YGNbByFAFdXFjZQR3qrnu0cADY29mgEncxZF1QHs";
+        
+        const payload = {
+            embeds: [{
+                title: "Новая заявка",
+                color: 5814783,
+                fields: [
+                    { name: "Steam", value: document.getElementById('steamLink').value },
+                    { name: "Часы", value: document.getElementById('hours').value },
+                    { name: "Роль", value: document.getElementById('role').value }
+                ],
+                timestamp: new Date()
+            }]
+        };
+
+        fetch(webhookURL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => {
+            if (res.ok) {
+                alert('Успешно отправлено!');
+                document.getElementById('ticketForm').reset();
+            } else {
+                alert('Ошибка отправки');
+            }
+        })
+        .catch(err => {
+            alert('Ошибка сети.');
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerText = 'Отправить тикет';
+        });
+    });
+</script>
+
+</body>
+</html>
