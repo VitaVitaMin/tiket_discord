@@ -3,137 +3,343 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подача заявки</title>
+    <title>RUST RECRUITMENT TERMINAL</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap');
+
+        :root {
+            --rust-red: #ce3f2b;
+            --rust-dark: #0d0d0d;
+            --rust-panel: #1a1a1a;
+            --rust-input: #050505;
+            --rust-text: #888;
+            --rust-border: #2a2a2a;
+            --rust-glow: rgba(206, 63, 43, 0.3);
+        }
+
         body {
-            background-color: #0f1011;
-            color: #ffffff;
-            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--rust-dark);
+            /* Текстура металлической сетки/листа в стиле Rust */
+            background-image: 
+                radial-gradient(circle at 2px 2px, #222 1px, transparent 0);
+            background-size: 24px 24px;
+            color: #fff;
+            font-family: 'Roboto Condensed', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
         }
-        .container {
-            background-color: #1a1c1e;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+        .form-container {
+            background-color: var(--rust-panel);
+            background-image: linear-gradient(135deg, rgba(255,255,255,0.02) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.02) 50%, rgba(255,255,255,0.02) 75%, transparent 75%, transparent);
+            background-size: 40px 40px;
             width: 100%;
-            max-width: 400px;
-            border: 1px solid #333;
+            max-width: 600px;
+            padding: 50px;
+            border: 1px solid var(--rust-border);
+            position: relative;
+            box-shadow: 0 0 60px rgba(0,0,0,1);
+            border-radius: 2px;
         }
+
+        .terminal-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #333;
+            overflow: hidden;
+        }
+
+        .terminal-line {
+            height: 100%;
+            width: 30%;
+            background: var(--rust-red);
+            box-shadow: 0 0 10px var(--rust-red);
+            animation: scan 3s infinite linear;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(350%); }
+        }
+
         h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 42px;
             text-align: center;
-            margin-bottom: 25px;
-            color: #7289da;
             text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 0 0 40px 0;
+            color: #fff;
+            text-shadow: 0 0 15px rgba(255,255,255,0.1);
         }
-        .form-group {
+
+        .section {
+            margin-bottom: 40px;
+            border-left: 2px solid #222;
+            padding-left: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .section:focus-within {
+            border-color: var(--rust-red);
+        }
+
+        .section-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: var(--rust-red);
+            letter-spacing: 3px;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .field { margin-bottom: 22px; }
+
         label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-            color: #b9bbbe;
+            margin-bottom: 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--rust-text);
+            letter-spacing: 1px;
+            font-weight: 700;
         }
-        input, select {
+
+        input, select, textarea {
             width: 100%;
-            padding: 12px;
-            background-color: #2f3136;
-            border: 1px solid #202225;
-            border-radius: 5px;
+            padding: 15px;
+            background-color: var(--rust-input);
+            border: 1px solid var(--rust-border);
             color: #fff;
+            font-family: inherit;
+            font-size: 16px;
             box-sizing: border-box;
             outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        button {
-            width: 100%;
-            padding: 14px;
-            background-color: #5865f2;
+
+        input:focus, textarea:focus {
+            border-color: var(--rust-red);
+            background-color: #000;
+            box-shadow: 0 0 15px var(--rust-glow);
+            transform: translateX(5px);
+        }
+
+        .rules-wrapper {
+            margin: 40px 0;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--rust-border);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            cursor: pointer;
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
             color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
+        }
+
+        .checkbox-container input {
+            width: 26px;
+            height: 26px;
+            accent-color: var(--rust-red);
             cursor: pointer;
         }
+
+        .warning-text {
+            color: #777;
+            font-size: 12px;
+            margin-top: 15px;
+            line-height: 1.6;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--rust-red);
+            color: #fff;
+            border: none;
+            font-family: 'Oswald', sans-serif;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+        }
+
+        button:hover {
+            background-color: #e64a35;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
         button:disabled {
-            background-color: #3c45a5;
+            background-color: #444;
             cursor: not-allowed;
+            clip-path: none;
+        }
+
+        #status {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Oswald', sans-serif;
+            font-size: 14px;
+            letter-spacing: 1px;
+            border: 1px solid;
+        }
+        
+        .success { color: #43b581; border-color: #43b581; background: rgba(67, 181, 129, 0.05); }
+        .error { color: var(--rust-red); border-color: var(--rust-red); background: rgba(206, 63, 43, 0.05); }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+            .form-container { padding: 30px 20px; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h2>Тикет</h2>
-    <form id="ticketForm">
-        <div class="form-group">
-            <label>Ссылка на Steam профиль</label>
-            <input type="url" id="steamLink" required>
+<div class="form-container">
+    <div class="terminal-header"><div class="terminal-line"></div></div>
+    
+    <h2>RECRUITMENT TERMINAL</h2>
+    
+    <form id="rustForm">
+        <div class="section">
+            <div class="section-header">01 DATA_LINK</div>
+            <div class="grid">
+                <div class="field">
+                    <label>Имя / Позывной</label>
+                    <input type="text" name="Nickname" required>
+                </div>
+                <div class="field">
+                    <label>Возраст</label>
+                    <input type="number" name="Age" required min="12">
+                </div>
+            </div>
+            <div class="field">
+                <label>Страна / Часовой пояс</label>
+                <input type="text" name="Location" required placeholder="Россия, МСК+0">
+            </div>
         </div>
-        <div class="form-group">
-            <label>Кол-во часов</label>
-            <input type="number" id="hours" required>
+
+        <div class="section">
+            <div class="section-header">02 AUTHENTICATION</div>
+            <div class="field">
+                <label>Steam Profile URL</label>
+                <input type="url" name="Steam_URL" required placeholder="https://steamcommunity.com/id/...">
+            </div>
+            <div class="grid">
+                <div class="field">
+                    <label>Всего часов</label>
+                    <input type="number" name="Total_Hours" required>
+                </div>
+                <div class="field">
+                    <label>Средний онлайн</label>
+                    <input type="text" name="Daily_Online" required placeholder="8ч / день">
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label>На какую роль претендуете</label>
-            <select id="role" required>
-                <option value="Комбат">Комбат</option>
-                <option value="Билдер (запас)">Билдер (запас)</option>
-                <option value="Фермер">Фермер</option>
-                <option value="Фармер">Фармер</option>
-                <option value="Электрик (запас)">Электрик (запас)</option>
-            </select>
+
+        <div class="section">
+            <div class="section-header">03 SPECIFICATIONS</div>
+            <div class="field">
+                <label>Боевая роль</label>
+                <select name="Main_Role">
+                    <option value="Комбат">Комбат (PvP Core)</option>
+                    <option value="Билдер(запас)">Билдер (Construction)</option>
+                    <option value="Фермер">Фермер (Plants/Tea)</option>
+                    <option value="Фармер">Фармер (Resource Gathering)</option>
+                    <option value="Электрик(запас)">Электрик (Industrial)</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Оружие (Spray / Distance)</label>
+                <input type="text" name="Gun_Skills" required placeholder="AK-47 (150m), MP5 (100m)">
+            </div>
+            <div class="field">
+                <label>История кланов</label>
+                <textarea name="Clan_History" rows="3" required placeholder="Где играли ранее и причины исключения/ухода..."></textarea>
+            </div>
         </div>
-        <button type="submit" id="submitBtn">Отправить тикет</button>
+
+        <div class="rules-wrapper">
+            <label class="checkbox-container">
+                <input type="checkbox" name="Verified" value="YES" required>
+                ПОДТВЕРЖДАЮ ЛИЧНОСТЬ
+            </label>
+            <div class="warning-text">
+                Любая попытка использования ПО, макросов или обмана системы приведет к немедленной блокировке в базе данных клана.
+            </div>
+        </div>
+
+        <button type="submit" id="submitBtn">ОТПРАВИТЬ ДАННЫЕ</button>
+        <div id="status"></div>
     </form>
 </div>
 
 <script>
-    document.getElementById('ticketForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const btn = document.getElementById('submitBtn');
+    const form = document.getElementById("rustForm");
+    const status = document.getElementById("status");
+    const btn = document.getElementById("submitBtn");
+
+    form.addEventListener("submit", async function(event) {
+        event.preventDefault();
         btn.disabled = true;
-        btn.innerText = 'Отправка...';
-
-        const webhookURL = "https://discord.com/api/webhooks/1492978139666583562/2C1wx17GQ81g0o8gBg3nspUkXC50YGNbByFAFdXFjZQR3qrnu0cADY29mgEncxZF1QHs";
+        btn.innerText = "TRANSFERRING...";
         
-        const payload = {
-            embeds: [{
-                title: "Новая заявка",
-                color: 5814783,
-                fields: [
-                    { name: "Steam", value: document.getElementById('steamLink').value },
-                    { name: "Часы", value: document.getElementById('hours').value },
-                    { name: "Роль", value: document.getElementById('role').value }
-                ],
-                timestamp: new Date()
-            }]
-        };
-
-        fetch(webhookURL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(res => {
-            if (res.ok) {
-                alert('Успешно отправлено!');
-                document.getElementById('ticketForm').reset();
+        const data = new FormData(event.target);
+        
+        fetch("https://formspree.io/f/mgorwppo", {
+            method: "POST",
+            body: data,
+            headers: { 'Accept': 'application/json' }
+        }).then(response => {
+            if (response.ok) {
+                status.innerHTML = "ПЕРЕДАЧА ЗАВЕРШЕНА. ВАШ ТИКЕТ БУДЕТ РАССМОТРЕН В БЛИЖАЙШЕЕ ВРЕМЯ.";
+                status.className = "success";
+                status.style.display = "block";
+                form.reset();
+                btn.style.display = "none";
             } else {
-                alert('Ошибка отправки');
+                throw new Error();
             }
-        })
-        .catch(err => {
-            alert('Ошибка сети.');
-        })
-        .finally(() => {
+        }).catch(() => {
+            status.innerHTML = "ОШИБКА ПЕРЕДАЧИ. ПОВТОРИТЕ ПОПЫТКУ.";
+            status.className = "error";
+            status.style.display = "block";
             btn.disabled = false;
-            btn.innerText = 'Отправить тикет';
+            btn.innerText = "ОТПРАВИТЬ ДАННЫЕ";
         });
     });
 </script>
