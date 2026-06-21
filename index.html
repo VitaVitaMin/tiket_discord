@@ -3,24 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RUST RECRUITMENT TERMINAL</title>
+    <title>SULFUR RECRUITMENT TERMINAL</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto+Condensed:wght@400;700&display=swap');
 
         :root {
-            --rust-red: #ce3f2b;
-            --rust-dark: #0d0d0d;
-            --rust-panel: #1a1a1a;
-            --rust-input: #050505;
-            --rust-text: #888;
-            --rust-border: #2a2a2a;
-            --rust-glow: rgba(206, 63, 43, 0.3);
+            --sulfur-yellow: #ffcc00;
+            --sulfur-bright: #ffea00;
+            --sulfur-dark: #0a0a0a;
+            --sulfur-panel: #141414;
+            --sulfur-input: #030303;
+            --sulfur-text: #7a7a7a;
+            --sulfur-border: #262626;
+            --sulfur-glow: rgba(255, 204, 0, 0.2);
+            --error-red: #ff3333;
         }
 
         body {
-            background-color: var(--rust-dark);
-            background-image: radial-gradient(circle at 2px 2px, #222 1px, transparent 0);
-            background-size: 24px 24px;
+            background-color: var(--sulfur-dark);
+            background-image: 
+                radial-gradient(circle at 2px 2px, #1a1a1a 1px, transparent 0),
+                linear-gradient(to right, rgba(255, 204, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 204, 0, 0.02) 1px, transparent 1px);
+            background-size: 24px 24px, 48px 48px, 48px 48px;
             color: #fff;
             font-family: 'Roboto Condensed', sans-serif;
             display: flex;
@@ -29,18 +34,96 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
         }
 
+        /* --- МОДАЛЬНОЕ ОКНО DISCORD --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1), opacity 0.6s ease;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .modal-content {
+            background: var(--sulfur-panel);
+            border: 1px solid var(--sulfur-border);
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            animation: modalEntry 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes modalEntry {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-content h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 28px;
+            margin: 0 0 15px 0;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .modal-content h3 span { color: var(--sulfur-yellow); }
+
+        .modal-content p {
+            color: var(--sulfur-text);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .error-msg {
+            color: var(--error-red);
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-top: 10px;
+            display: none;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* --- ОСНОВНАЯ ФОРМА --- */
         .form-container {
-            background-color: var(--rust-panel);
-            background-image: linear-gradient(135deg, rgba(255,255,255,0.01) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.01) 50%, rgba(255,255,255,0.01) 75%, transparent 75%, transparent);
-            background-size: 40px 40px;
+            background-color: var(--sulfur-panel);
+            background-image: linear-gradient(135deg, rgba(255,204,0,0.01) 25%, transparent 25%, transparent 50%, rgba(255,204,0,0.01) 50%, rgba(255,204,0,0.01) 75%, transparent 75%, transparent);
+            background-size: 30px 30px;
             width: 100%;
             max-width: 600px;
             padding: 50px;
-            border: 1px solid var(--rust-border);
+            border: 1px solid var(--sulfur-border);
             position: relative;
-            box-shadow: 0 0 60px rgba(0,0,0,1);
+            box-shadow: 0 0 60px rgba(0,0,0,1), inset 0 0 20px rgba(0,0,0,0.6);
+            
+            /* Скрытие для анимации появления */
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .form-container.active {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .terminal-header {
@@ -49,21 +132,21 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: #333;
+            background: #1f1f1f;
             overflow: hidden;
         }
 
         .terminal-line {
             height: 100%;
-            width: 30%;
-            background: var(--rust-red);
-            box-shadow: 0 0 10px var(--rust-red);
-            animation: scan 3s infinite linear;
+            width: 35%;
+            background: var(--sulfur-yellow);
+            box-shadow: 0 0 15px var(--sulfur-yellow);
+            animation: scan 2.5s infinite linear;
         }
 
         @keyframes scan {
             0% { transform: translateX(-100%); }
-            100% { transform: translateX(350%); }
+            100% { transform: translateX(300%); }
         }
 
         h2 {
@@ -71,22 +154,44 @@
             font-size: 42px;
             text-align: center;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             margin: 0 0 40px 0;
             color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
         }
+        
+        h2 span { color: var(--sulfur-yellow); }
 
+        /* Каскадная анимация для секций */
         .section {
             margin-bottom: 40px;
-            border-left: 2px solid #222;
+            border-left: 2px solid #2d2d2d;
             padding-left: 20px;
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .form-container.active .section {
+            animation: slideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .form-container.active .section:nth-child(2) { animation-delay: 0.15s; }
+        .form-container.active .section:nth-child(3) { animation-delay: 0.3s; }
+        .form-container.active .section:nth-child(4) { animation-delay: 0.45s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+                border-left-color: var(--sulfur-yellow);
+            }
         }
 
         .section-header {
             font-family: 'Oswald', sans-serif;
             font-size: 13px;
             text-transform: uppercase;
-            color: var(--rust-red);
+            color: var(--sulfur-yellow);
             letter-spacing: 3px;
             margin-bottom: 20px;
         }
@@ -104,34 +209,42 @@
             margin-bottom: 10px;
             font-size: 11px;
             text-transform: uppercase;
-            color: var(--rust-text);
+            color: var(--sulfur-text);
+            letter-spacing: 1px;
             font-weight: 700;
         }
 
         input, select, textarea {
             width: 100%;
             padding: 15px;
-            background-color: var(--rust-input);
-            border: 1px solid var(--rust-border);
+            background-color: var(--sulfur-input);
+            border: 1px solid var(--sulfur-border);
             color: #fff;
             font-family: inherit;
             font-size: 16px;
             box-sizing: border-box;
             outline: none;
-            transition: 0.3s;
+            transition: all 0.25s ease-in-out;
         }
 
-        input:focus, textarea:focus {
-            border-color: var(--rust-red);
-            box-shadow: 0 0 15px var(--rust-glow);
+        input:focus, textarea:focus, select:focus {
+            border-color: var(--sulfur-yellow);
+            box-shadow: 0 0 15px var(--sulfur-glow);
+            background-color: #070707;
+        }
+
+        select option {
+            background: var(--sulfur-panel);
+            color: #fff;
         }
 
         .rules-wrapper {
             margin: 40px 0;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid var(--rust-border);
+            background: rgba(0,0,0,0.5);
+            border: 1px solid var(--sulfur-border);
             padding: 30px;
             text-align: center;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.6);
         }
 
         .checkbox-container {
@@ -141,31 +254,49 @@
             gap: 15px;
             cursor: pointer;
             font-family: 'Oswald', sans-serif;
-            font-size: 20px;
+            font-size: 18px;
+            letter-spacing: 1px;
+            color: #eee;
+            transition: color 0.2s;
         }
+        
+        .checkbox-container:hover { color: var(--sulfur-bright); }
 
         .checkbox-container input {
-            width: 26px;
-            height: 26px;
-            accent-color: var(--rust-red);
+            width: 22px;
+            height: 22px;
+            accent-color: var(--sulfur-yellow);
+            cursor: pointer;
         }
 
         button {
             width: 100%;
             padding: 18px;
-            background-color: var(--rust-red);
-            color: #fff;
+            background-color: var(--sulfur-yellow);
+            color: #000;
             border: none;
             font-family: 'Oswald', sans-serif;
             font-size: 20px;
+            font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 2px;
             cursor: pointer;
-            clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+            clip-path: polygon(4% 0%, 100% 0%, 96% 100%, 0% 100%);
+            transition: all 0.2s ease;
         }
 
-        button:hover { background-color: #e64a35; }
-        button:disabled { background-color: #444; cursor: not-allowed; }
+        button:hover { 
+            background-color: var(--sulfur-bright);
+            box-shadow: 0 0 20px rgba(255, 234, 0, 0.4);
+        }
+
+        button:disabled { 
+            background-color: #222; 
+            color: #555;
+            cursor: not-allowed; 
+            clip-path: none;
+            box-shadow: none;
+        }
 
         #status {
             display: none;
@@ -173,19 +304,35 @@
             padding: 20px;
             text-align: center;
             font-family: 'Oswald', sans-serif;
+            letter-spacing: 1px;
         }
         
-        .success { color: #43b581; border: 1px solid #43b581; }
-        .error { color: var(--rust-red); border: 1px solid var(--rust-red); }
+        .success { color: #43b581; border: 1px solid #43b581; background: rgba(67, 181, 129, 0.05); }
+        .error { color: var(--sulfur-yellow); border: 1px solid var(--sulfur-yellow); background: rgba(255, 204, 0, 0.05); }
+        .cooldown { color: var(--error-red); border: 1px solid var(--error-red); background: rgba(255, 51, 51, 0.05); }
     </style>
 </head>
 <body>
 
-<div class="form-container">
+<div class="modal-overlay" id="discordAuth">
+    <div class="modal-content">
+        <h3><span>DISCORD</span> IDENTIFICATION</h3>
+        <p>Введите ваш логин Discord для доступа к терминалу набора</p>
+        <div class="field">
+            <input type="text" id="dcInput" placeholder="username или username_old" autocomplete="off" spellcheck="false">
+            <div class="error-msg" id="dcError">Неверный формат никнейма</div>
+        </div>
+        <button type="button" id="dcBtn" style="margin-top: 15px;">ПОДТВЕРДИТЬ</button>
+    </div>
+</div>
+
+<div class="form-container" id="mainTerminal">
     <div class="terminal-header"><div class="terminal-line"></div></div>
-    <h2>RECRUITMENT TERMINAL</h2>
+    <h2><span>SULFUR</span> RECRUITMENT</h2>
     
     <form id="rustForm">
+        <input type="hidden" name="Discord_Ник" id="hiddenDiscord">
+
         <div class="section">
             <div class="section-header">01 ЛИЧНЫЕ ДАННЫЕ</div>
             <div class="grid">
@@ -257,16 +404,103 @@
 </div>
 
 <script>
+    // --- УПРАВЛЕНИЕ КУКАМИ (ТАЙМАУТ 15 МИНУТ) ---
+    function setCookie(name, value, seconds) {
+        const date = new Date();
+        date.setTime(date.getTime() + (seconds * 1000));
+        document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/; SameSite=Strict";
+    }
+
+    function getCookie(name) {
+        const matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+
+    // --- ЭЛЕМЕНТЫ СТРАНИЦЫ ---
+    const modal = document.getElementById("discordAuth");
+    const dcInput = document.getElementById("dcInput");
+    const dcBtn = document.getElementById("dcBtn");
+    const dcError = document.getElementById("dcError");
+    
+    const terminal = document.getElementById("mainTerminal");
     const form = document.getElementById("rustForm");
+    const hiddenDiscord = document.getElementById("hiddenDiscord");
     const status = document.getElementById("status");
     const btn = document.getElementById("submitBtn");
 
+    // Автофокус на поле ввода Discord при входе
+    window.addEventListener("DOMContentLoaded", () => {
+        dcInput.focus();
+        
+        // Проверка на ограничение по времени сразу при загрузке
+        if (getCookie("sulfur_cooldown")) {
+            btn.disabled = true;
+            btn.innerText = "ДОСТУП ЗАБЛОКИРОВАН";
+            status.innerHTML = "ОШИБКА: ПОВТОРНАЯ ОТПРАВКА ВОЗМОЖНА РАЗ В 15 МИНУТ.";
+            status.className = "cooldown";
+            status.style.display = "block";
+        }
+    });
+
+    // Форматирование ввода на лету (удаление пробелов, нижний регистр)
+    dcInput.addEventListener("input", () => {
+        dcInput.value = dcInput.value.toLowerCase().replace(/\s+/g, '');
+    });
+
+    // --- ВАЛИДАЦИЯ И ВХОД ЧЕРЕЗ DISCORD ---
+    function validateAndProceed() {
+        let username = dcInput.value.trim();
+        
+        // Если пользователь вставил символ @ в начале — удаляем его
+        if (username.startsWith('@')) {
+            username = username.substring(1);
+        }
+
+        // Регулярное выражение для актуальных ников Discord
+        const dcRegex = /^[a-z0-9_.]{2,32}$/;
+
+        if (dcRegex.test(username) && !username.includes('..')) {
+            dcError.style.display = "none";
+            hiddenDiscord.value = username; // Сохраняем ник в основную форму
+            
+            // Запуск анимации скрытия модалки и показа терминала
+            modal.classList.add("hidden");
+            setTimeout(() => {
+                terminal.classList.add("active");
+            }, 200);
+        } else {
+            dcError.style.display = "block";
+            dcInput.style.borderColor = "var(--error-red)";
+            dcInput.focus();
+        }
+    }
+
+    dcBtn.addEventListener("click", validateAndProceed);
+    dcInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            validateAndProceed();
+        }
+    });
+
+    // --- ОТПРАВКА ОСНОВНОЙ ФОРМЫ ---
     form.addEventListener("submit", function(e) {
         e.preventDefault();
+        
+        // Дополнительная проверка куки перед фактической отправкой
+        if (getCookie("sulfur_cooldown")) {
+            status.innerHTML = "БЛОКИРОВКА: ПОЖАЛУЙСТА, ПОДОЖДИТЕ 15 МИНУТ ПЕРЕД ПОВТОРНЫМ ЗАПРОСОМ.";
+            status.className = "cooldown";
+            status.style.display = "block";
+            return;
+        }
+
         btn.disabled = true;
         btn.innerText = "ОТПРАВКА...";
         
-        fetch("https://formspree.io/f/mgorwppo", {
+        fetch("https://formspree.io/f/xrewzywr", {
             method: "POST",
             body: new FormData(form),
             headers: { 'Accept': 'application/json' }
@@ -277,11 +511,14 @@
                 status.style.display = "block";
                 form.reset();
                 btn.style.display = "none";
+                
+                // Установка куки на 15 минут (900 секунд)
+                setCookie("sulfur_cooldown", "activated", 900);
             } else {
                 throw new Error();
             }
         }).catch(() => {
-            status.innerHTML = "ОШИБКА. ПРОВЕРЬТЕ СОЕДИНЕНИЕ.";
+            status.innerHTML = "ОШИБКА СЕТИ. ПРОВЕРЬТЕ СОЕДИНЕНИЕ И ПОПРОБУЙТЕ СНОВА.";
             status.className = "error";
             status.style.display = "block";
             btn.disabled = false;
