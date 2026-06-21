@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SULFUR HUD TERMINAL v2.0</title>
+    <title>SULFUR — Анкета в клан</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Share+Tech+Mono&family=Roboto+Condensed:wght@400;700&display=swap');
 
@@ -40,7 +40,7 @@
             overflow-x: hidden;
         }
 
-        /* ТАКТИЧЕСКИЙ КАНТИК И УГЛЫ ДЛЯ БЛОКОВ */
+        /* HUD РАМКИ И УГЛЫ */
         .hud-box {
             position: relative;
             background: var(--sulfur-panel);
@@ -61,7 +61,7 @@
         .hud-box::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
         .hud-box::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
-        /* --- МОДАЛЬНОЕ ОКНО DISCORD (МЕГА-ГЛИЧ И КРАШ) --- */
+        /* ОКОШКО АВТОРИЗАЦИИ DISCORD (ЭФФЕКТ СХЛОПЫВАНИЯ) */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -87,7 +87,7 @@
 
         .modal-content {
             padding: 40px;
-            max-width: 420px;
+            max-width: 450px;
             width: 100%;
             text-align: center;
         }
@@ -95,41 +95,34 @@
         .modal-content h3 {
             font-family: 'Oswald', sans-serif;
             font-size: 30px;
-            margin: 0 0 10px 0;
-            letter-spacing: 3px;
+            margin: 0 0 15px 0;
+            letter-spacing: 2px;
             text-transform: uppercase;
             animation: textFlicker 2s infinite;
         }
         .modal-content h3 span { color: var(--sulfur-yellow); }
 
         .modal-content p {
-            color: var(--sulfur-text);
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
-            text-transform: uppercase;
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.5;
             margin-bottom: 25px;
-            letter-spacing: 1px;
         }
 
-        /* --- ИНТЕРАКТИВНЫЕ ПОДКАЗКИ (ХОВЕРЫ) --- */
+        /* ПОДСКАЗКИ ПРИ НАВЕДЕНИИ (ХОВЕРЫ) */
         .hint {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 11px;
+            font-size: 12px;
             color: var(--sulfur-text);
             margin-top: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            opacity: 0.3;
-            transform: translateX(-5px);
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.5;
         }
         .field:focus-within .hint, .field:hover .hint {
             opacity: 1;
             color: var(--sulfur-bright);
-            transform: translateX(0);
         }
 
-        /* --- ОСНОВНОЙ HUD ИНТЕРФЕЙС --- */
+        /* ОСНОВНАЯ ФОРМА АНКЕТЫ */
         .form-container {
             width: 100%;
             max-width: 620px;
@@ -138,7 +131,7 @@
             opacity: 0;
             transform: scale(0.95) translateY(20px);
             transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            perspective: 1200px; /* Для 3D раскрытия секций */
+            perspective: 1200px;
         }
 
         .form-container.active {
@@ -161,16 +154,15 @@
 
         h2 {
             font-family: 'Oswald', sans-serif;
-            font-size: 44px;
+            font-size: 40px;
             text-align: center;
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             margin: 0 0 45px 0;
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
         }
         h2 span { color: var(--sulfur-yellow); }
 
-        /* --- МЕГА 3D-РАСКРЫТИЕ СЕКЦИЙ --- */
+        /* 3D-РАСКРЫТИЕ СЕКЦИЙ НА СТАРТЕ */
         .section {
             margin-bottom: 40px;
             border-left: 3px solid #1c1c1c;
@@ -192,10 +184,10 @@
 
         .section-header {
             font-family: 'Oswald', sans-serif;
-            font-size: 14px;
+            font-size: 16px;
             text-transform: uppercase;
             color: var(--sulfur-yellow);
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             margin-bottom: 22px;
         }
 
@@ -205,14 +197,14 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-size: 11px;
+            font-size: 12px;
             text-transform: uppercase;
-            color: #999;
-            letter-spacing: 1.5px;
+            color: #aaa;
+            letter-spacing: 1px;
             font-weight: 700;
         }
 
-        /* ПОЛЯ ВВОДА И СТРОГАЯ ВАЛИДАЦИЯ */
+        /* СТИЛИ ИНПУТОВ */
         input, select, textarea {
             width: 100%;
             padding: 16px;
@@ -232,7 +224,7 @@
             background-color: #050505;
         }
 
-        /* Статусы валидации через классы JS */
+        /* ПОДСВЕТКА ВАЛИДАЦИИ */
         input.validated-field:focus:not(.invalid-field) {
             border-color: var(--success-green);
             box-shadow: 0 0 15px rgba(0, 255, 102, 0.1);
@@ -244,13 +236,10 @@
         }
 
         .error-text {
-            font-family: 'Share Tech Mono', monospace;
             color: var(--error-red);
-            font-size: 11px;
-            text-transform: uppercase;
+            font-size: 12px;
             margin-top: 5px;
             display: none;
-            letter-spacing: 0.5px;
         }
 
         select option { background: var(--sulfur-panel); color: #fff; }
@@ -267,14 +256,14 @@
             display: flex; align-items: center; justify-content: center; gap: 12px;
             cursor: pointer; font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px;
         }
-        .checkbox-container input { width: 20px; height: 20px; accent-color: var(--sulfur-yellow); }
+        .checkbox-container input { width: 20px; height: 20px; accent-color: var(--sulfur-yellow); cursor: pointer; }
 
-        /* ИНДУСТРИАЛЬНАЯ КНОПКА */
+        /* КНОПКА ОТПРАВКИ */
         button {
             width: 100%; padding: 20px;
             background-color: var(--sulfur-yellow); color: #000;
             border: none; font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 3px; cursor: pointer;
+            text-transform: uppercase; letter-spacing: 2px; cursor: pointer;
             clip-path: polygon(3% 0%, 100% 0%, 97% 100%, 0% 100%);
             transition: all 0.25s ease;
         }
@@ -291,19 +280,18 @@
 
         #status {
             display: none; margin-top: 30px; padding: 20px; text-align: center;
-            font-family: 'Oswald', sans-serif; letter-spacing: 1px;
+            font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 16px;
         }
         .success { color: var(--success-green); border: 1px solid var(--success-green); background: rgba(0, 255, 102, 0.03); }
         .error { color: var(--error-red); border: 1px solid var(--error-red); background: rgba(255, 34, 34, 0.03); }
 
-        /* КИБЕР-МЕРЦАНИЕ */
         @keyframes textFlicker {
             0%, 100% { opacity: 1; }
             23% { opacity: 1; }
             25% { opacity: 0.8; }
             26% { opacity: 1; }
             42% { opacity: 1; }
-            44% { opacity: 0.3; }
+            44% { opacity: 0.4; }
             45% { opacity: 1; }
         }
     </style>
@@ -312,109 +300,109 @@
 
 <div class="modal-overlay" id="discordAuth">
     <div class="modal-content hud-box">
-        <h3><span>SULFUR</span> CORE_AUTH</h3>
-        <p>// ВВЕДИТЕ АКТУАЛЬНЫЙ DISCORD USERNAME ДЛЯ ПОДКЛЮЧЕНИЯ К СЕТИ</p>
+        <h3>Вход через <span>Discord</span></h3>
+        <p>Пожалуйста, введите ваш точный логин (Username) для доступа к анкете. Сейчас в Discord используются новые ники — без решетки (#) и цифр после неё.</p>
         <div class="field" style="text-align: left;">
-            <label>Discord Аккаунт</label>
+            <label>Ваш Discord никнейм</label>
             <input type="text" id="dcInput" placeholder="например: x_sulfur.pilot" autocomplete="off" spellcheck="false">
-            <div class="hint">Только буквы a-z, цифры, точки и нижнее подчеркивание. От 2 до 32 знаков. Без @.</div>
-            <div class="error-text" id="dcErrorText">Система: некорректная структура имени пользователя</div>
+            <div class="hint">Только маленькие английские буквы, цифры, точки или нижнее подчеркивание (от 2 до 32 символов). Знак @ писать не нужно.</div>
+            <div class="error-text" id="dcErrorText">Неверный формат никнейма. Проверьте отсутствие заглавных букв, пробелов и знака #.</div>
         </div>
-        <button type="button" id="dcBtn" style="margin-top: 10px;">БОРТОВОЙ ВХОД</button>
+        <button type="button" id="dcBtn" style="margin-top: 10px;">Войти на сайт</button>
     </div>
 </div>
 
 <div class="form-container hud-box" id="mainTerminal">
     <div class="terminal-header"><div class="terminal-line"></div></div>
-    <h2><span>SULFUR</span> RECRUITMENT_HUD</h2>
+    <h2>Анкета в клан <span>SULFUR</span></h2>
     
     <form id="rustForm" novalidate>
         <input type="hidden" name="Discord_Ник" id="hiddenDiscord">
 
         <div class="section">
-            <div class="section-header">01 // ЛИЧНЫЙ СОСТАВ</div>
+            <div class="section-header">01. Личные данные</div>
             <div class="grid">
                 <div class="field">
-                    <label>Имя / Позывной</label>
-                    <input type="text" name="Имя_Ник" required autocomplete="off">
-                    <div class="hint">Имя или ваш постоянный игровой никнейм</div>
+                    <label>Имя или Позывной</label>
+                    <input type="text" name="Имя_Ник" required autocomplete="off" placeholder="Как к вам обращаться">
+                    <div class="hint">Ваше реальное имя или постоянный ник в игре.</div>
                 </div>
                 <div class="field">
-                    <label>Возраст (14 - 50)</label>
-                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50">
-                    <div class="hint">Допуск в клан строго с 14 лет</div>
-                    <div class="error-text">Критическая ошибка: Возраст вне диапазона (14-50)</div>
+                    <label>Возраст</label>
+                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50" placeholder="Полных лет">
+                    <div class="hint">Принимаем строго от 14 до 50 лет.</div>
+                    <div class="error-text">Вы не подходите по возрасту (допустимо от 14 до 50 лет).</div>
                 </div>
             </div>
             <div class="field">
-                <label>Страна / Часовой пояс</label>
-                <input type="text" name="Локация" required autocomplete="off" placeholder="Пример: Россия, МСК">
-                <div class="hint">Геопозиция и разница во времени с Москвой</div>
+                <label>Страна и часовой пояс</label>
+                <input type="text" name="Локация" required autocomplete="off" placeholder="Например: Россия, МСК">
+                <div class="hint">Укажите вашу страну и разницу во времени с Москвой (например: МСК+2).</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">02 // СИНХРОНИЗАЦИЯ ПРОФИЛЯ</div>
+            <div class="section-header">02. Игровой профиль</div>
             <div class="field">
-                <label>Steam Profile URL</label>
+                <label>Ссылка на Steam профиль</label>
                 <input type="url" name="Steam_Ссылка" id="steamInput" required autocomplete="off" placeholder="https://steamcommunity.com/id/...">
-                <div class="hint">Ссылка должна начинаться с домена steamcommunity.com</div>
-                <div class="error-text">Ошибка сети: Неверный URL адрес профиля Steam</div>
+                <div class="hint">Ссылка должна начинаться с https://steamcommunity.com/id/ или https://steamcommunity.com/profiles/</div>
+                <div class="error-text">Неверный формат ссылки. Она должна вести на официальный сайт Steam.</div>
             </div>
             <div class="grid">
                 <div class="field">
-                    <label>Чистый онлайн (Часы в Rust)</label>
-                    <input type="number" name="Часы" id="hoursInput" required min="1">
-                    <div class="hint">Общее количество игровых часов на аккаунте</div>
-                    <div class="error-text">Недопустимое значение счетчика времени</div>
+                    <label>Часы в Rust</label>
+                    <input type="number" name="Часы" id="hoursInput" required min="1" placeholder="Общий налет">
+                    <div class="hint">Ваше общее количество часов в игре.</div>
+                    <div class="error-text">Введите корректное число часов.</div>
                 </div>
                 <div class="field">
-                    <label>Стабильный онлайн в сутки</label>
-                    <input type="text" name="Онлайн" required placeholder="Пример: 5-8 часов">
-                    <div class="hint">Реальное количество часов, проводимых в игре</div>
+                    <label>Средний онлайн в сутки</label>
+                    <input type="text" name="Онлайн" required placeholder="Например: 4-6 часов">
+                    <div class="hint">Сколько времени вы готовы стабильно уделять игре каждый день.</div>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">03 // ТАКТИЧЕСКИЕ ДАННЫЕ</div>
+            <div class="section-header">03. Игровой опыт</div>
             <div class="field">
-                <label>Основная спецификация / Роль</label>
-                <select name="Role">
-                    <option value="Комбат">Комбат (Штурмовой отряд)</option>
-                    <option value="Билдер">Билдер (Запасной инженер)</option>
-                    <option value="Фермер">Фермер (Агро-комплекс)</option>
-                    <option value="Фармер">Фармер (Ресурсодобыча)</option>
-                    <option value="Электрик">Электрик (Индустриальные схемы)</option>
+                <label>Основная роль в игре</label>
+                <select name="Роль">
+                    <option value="Комбат">Комбат (Основной стрелок)</option>
+                    <option value="Билдер">Билдер (Строитель баз)</option>
+                    <option value="Фермер">Фермер (Конный / Ткань / Чай)</option>
+                    <option value="Фармер">Фармер (Добыча ресурсов)</option>
+                    <option value="Электрик">Электрик (Автоматизация и схемы)</option>
                 </select>
-                <div class="hint">Выберите вашу самую сильную и предпочтительную сторону в игре</div>
+                <div class="hint">Выберите направление, в котором вы разбираетесь лучше всего.</div>
             </div>
             <div class="field">
-                <label>Огневая подготовка (Оружие / Дистанция)</label>
-                <input type="text" name="Навыки_Оружия" required placeholder="Пример: АК/Берданка, 100-150м">
-                <div class="hint">Укажите оружие и эффективную дистанцию ведения боя</div>
+                <label>Стрельба (Оружие и дистанция)</label>
+                <input type="text" name="Навыки_Оружия" required placeholder="Например: АК-47, Берданка, до 150 метров">
+                <div class="hint">С какого оружия стреляете увереннее всего и на какое расстояние.</div>
             </div>
             <div class="field">
-                <label>Боевой опыт (История кланов)</label>
-                <textarea name="История_Кланов" rows="3" required placeholder="В каких командах состояли и причины ухода?"></textarea>
-                <div class="hint">Краткий список предыдущих кланов, тим и группировок</div>
+                <label>Прошлые кланы / Команды</label>
+                <textarea name="История_Кланов" rows="3" required placeholder="Перечислите команды и причины ухода из них"></textarea>
+                <div class="hint">Напишите, в каких командах играли раньше и почему прекратили сотрудничество.</div>
             </div>
         </div>
 
         <div class="rules-wrapper">
             <label class="checkbox-container">
                 <input type="checkbox" name="Правила_Приняты" value="Да" required>
-                МАТРИЦА СЕРТИФИЦИРОВАНА (ПОДТВЕРЖДАЮ ЛИЧНОСТЬ)
+                Я подтверждаю, что заполнил анкету честно
             </label>
         </div>
 
-        <button type="submit" id="submitBtn">ПЕРЕДАТЬ ТАКТИЧЕСКИЙ ПАКЕТ</button>
+        <button type="submit" id="submitBtn">Отправить анкету</button>
         <div id="status"></div>
     </form>
 </div>
 
 <script>
-    // --- COOKIE CONTROLLER (COOLDOWN БЛОКИРОВКА НА 15 МИНУТ) ---
+    // --- УПРАВЛЕНИЕ КУКАМИ (БЛОКИРОВКА НА 15 МИНУТ) ---
     function setCookie(name, value, seconds) {
         const date = new Date();
         date.setTime(date.getTime() + (seconds * 1000));
@@ -440,25 +428,26 @@
     const statusBox = document.getElementById("status");
     const submitBtn = document.getElementById("submitBtn");
 
-    // Инициализация при запуске
+    // Автофокус при загрузке
     window.addEventListener("DOMContentLoaded", () => {
         dcInput.focus();
         
+        // Быстрая проверка блокировки спама
         if (getCookie("sulfur_hud_cooldown")) {
             submitBtn.disabled = true;
-            submitBtn.innerText = "ТЕРМИНАЛ ЗАБЛОКИРОВАН";
-            statusBox.innerHTML = "БЛОКИРОВКА СИСТЕМЫ: ОТПРАВКА ДАННЫХ РАЗРЕШЕНА РАЗ В 15 МИНУТ.";
+            submitBtn.innerText = "Доступ временно ограничен";
+            statusBox.innerHTML = "Вы уже отправляли анкету. Повторная отправка возможна раз в 15 минут.";
             statusBox.className = "error";
             statusBox.style.display = "block";
         }
     });
 
-    // Форматирование Discord ввода в реальном времени
+    // Очистка ввода дискорда на лету
     dcInput.addEventListener("input", () => {
         dcInput.value = dcInput.value.toLowerCase().replace(/\s+/g, '');
     });
 
-    // --- ВАЛИДАЦИЯ DISCORD (НОВЫЙ ФОРМАТ) ---
+    // --- ПРОВЕРКА DISCORD USERNAME ---
     function checkDiscordAuth() {
         let username = dcInput.value.trim();
         
@@ -466,7 +455,7 @@
             username = username.substring(1);
         }
 
-        // Строгий RegExp нового дискорда (латиница, цифры, точки, подчёркивания, 2-32 символа)
+        // Регулярка для современных ников Discord
         const dcRegex = /^[a-z0-9_.]{2,32}$/;
 
         if (dcRegex.test(username) && !username.includes('..')) {
@@ -474,7 +463,7 @@
             dcInput.classList.remove("invalid-field");
             hiddenDiscord.value = username;
             
-            // Мега-анимация схлопывания оверлея
+            // Анимация красивого схлопывания окна авторизации
             modal.classList.add("collapse-out");
             setTimeout(() => {
                 modal.style.display = "none";
@@ -489,7 +478,7 @@
     dcBtn.addEventListener("click", checkDiscordAuth);
     dcInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkDiscordAuth(); } });
 
-    // --- СТРОГАЯ ЖИВАЯ ВАЛИДАЦИЯ ОСНОВНОЙ ФОРМЫ ---
+    // --- СТРОГАЯ ПРОВЕРКА ПОЛЕЙ АНКЕТЫ ---
     const steamInput = document.getElementById("steamInput");
     const ageInput = document.getElementById("ageInput");
     const hoursInput = document.getElementById("hoursInput");
@@ -506,33 +495,31 @@
         }
     }
 
-    // Валидация Steam URL
+    // Проверка Steam ссылки
     steamInput.addEventListener("input", () => {
         const url = steamInput.value.trim();
         const steamRegex = /^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
         showError(steamInput, !steamRegex.test(url));
     });
 
-    // Валидация возраста
+    // Проверка возраста
     ageInput.addEventListener("input", () => {
         const age = parseInt(ageInput.value, 10);
         showError(ageInput, isNaN(age) || age < 14 || age > 50);
     });
 
-    // Валидация часов
+    // Проверка часов
     hoursInput.addEventListener("input", () => {
         const hours = parseInt(hoursInput.value, 10);
         showError(hoursInput, isNaN(hours) || hours < 1);
     });
 
-    // --- ОБРАБОТКА И ОТПРАВКА ФОРМЫ ---
+    // --- ОТПРАВКА ДАННЫХ НА FORMSPREE ---
     form.addEventListener("submit", function(e) {
         e.preventDefault();
 
-        // Финальная проверка куки перед триггером скрипта
         if (getCookie("sulfur_hud_cooldown")) return;
 
-        // Повторный чек валидации всех кастомных полей
         const steamRegex = /^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/;
         const age = parseInt(ageInput.value, 10);
         const hours = parseInt(hoursInput.value, 10);
@@ -545,14 +532,14 @@
         if (!form.checkValidity()) { hasErrors = true; }
 
         if (hasErrors) {
-            statusBox.innerHTML = "КРИТИЧЕСКИЙ СБОЙ: ИСПРАВЬТЕ НЕКОРРЕКТНЫЕ ИНДИКАТОРЫ ВВОДА.";
+            statusBox.innerHTML = "Пожалуйста, исправьте ошибки в полях, выделенных красным цветом.";
             statusBox.className = "error";
             statusBox.style.display = "block";
             return;
         }
 
         submitBtn.disabled = true;
-        submitBtn.innerText = "ПЕРЕДАЧА ДАННЫХ...";
+        submitBtn.innerText = "Отправка анкеты...";
 
         fetch("https://formspree.io/f/xrewzywr", {
             method: "POST",
@@ -560,23 +547,23 @@
             headers: { 'Accept': 'application/json' }
         }).then(res => {
             if (res.ok) {
-                statusBox.innerHTML = "ТАКТИЧЕСКИЙ ПАКЕТ УСПЕШНО ИНТЕГРИРОВАН В БАЗУ ДАННЫХ КЛАНА.";
+                statusBox.innerHTML = "Анкета успешно отправлена! Мы рассмотрим её в ближайшее время.";
                 statusBox.className = "success";
                 statusBox.style.display = "block";
                 form.reset();
                 submitBtn.style.display = "none";
                 
-                // Запись куки кулдауна на 15 минут (900 секунд)
+                // Ставим куки блокировки на 15 минут (900 секунд)
                 setCookie("sulfur_hud_cooldown", "active", 900);
             } else {
                 throw new Error();
             }
         }).catch(() => {
-            statusBox.innerHTML = "ОШИБКА РЕЛЕ СВЯЗИ: ПРОВЕРЬТЕ СЕТЕВОЕ ПОДКЛЮЧЕНИЕ.";
+            statusBox.innerHTML = "Произошла ошибка при отправке. Пожалуйста, проверьте интернет и попробуйте еще раз.";
             statusBox.className = "error";
             statusBox.style.display = "block";
             submitBtn.disabled = false;
-            submitBtn.innerText = "ПЕРЕДАТЬ ТАКТИЧЕСКИЙ ПАКЕТ";
+            submitBtn.innerText = "Отправить анкету";
         });
     });
 </script>
