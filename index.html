@@ -110,13 +110,12 @@
             position: relative;
             border-radius: 50%;
         }
-        /* Иконка луны/солнца на чистом CSS */
+        
         [data-theme="light"] .theme-toggle-btn .icon {
-            background: var(--text-main);
+            background: transparent;
             box-shadow: 0 0 0 2px var(--text-main), 5px -5px 0 -1px var(--bg-input);
             transform: translate(-3px, 3px);
             border-radius: 50%;
-            background: transparent;
         }
         [data-theme="dark"] .theme-toggle-btn .icon {
             background: var(--yellow);
@@ -241,7 +240,7 @@
         .checkbox-container { display: flex; align-items: center; gap: 10px; font-size: calc(13px * var(--font-scale)); color: var(--text-muted); }
         .checkbox-container input { width: 16px; height: 16px; accent-color: var(--rust); cursor: pointer; margin: 0; }
 
-        /* ИСПРАВЛЕННЫЙ СТИЛЬ КНОПОК ОТПРАВКИ */
+        /* КНОПКИ ОТПРАВКИ */
         button[type="submit"], #dcBtn {
             width: 100%; padding: 12px; background-color: var(--rust); color: #ffffff;
             border: 1px solid transparent; font-size: calc(14px * var(--font-scale)); font-weight: 500;
@@ -249,7 +248,7 @@
         }
         button[type="submit"]:hover, #dcBtn:hover { 
             background-color: var(--rust-hover); 
-            color: #ffffff; /* Текст гарантированно остается белым */
+            color: #ffffff;
         }
         button:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
 
@@ -377,25 +376,36 @@
 <script>
     const API_URL = "https://example.com/api/ticket";
 
-    // ПЕРЕКЛЮЧЕНИЕ ОСНОВНЫХ ТЕМ (LIGHT / DARK)
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'accessible') return; // Не переключаем фон, если активен режим контраста
-        
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('sulfur_theme', newTheme);
-        document.getElementById('accessBtn').classList.remove('active');
+    // УПРАВЛЕНИЕ ТЕМАМИ С УЧЕТОМ СИСТЕМНЫХ НАСТРОЕК
+    function applyTheme(themeName) {
+        document.documentElement.setAttribute('data-theme', themeName);
+        if (themeName !== 'accessible') {
+            localStorage.setItem('sulfur_theme', themeName);
+            document.getElementById('accessBtn').classList.remove('active');
+        }
     }
 
-    // ОСОБЫЙ РЕЖИМ ДЛЯ СЛАБОВИДЯЩИХ
+    function toggleTheme() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        if (currentTheme === 'accessible') return;
+        
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(newTheme);
+    }
+
     function toggleAccessibility() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const accessBtn = document.getElementById('accessBtn');
         
         if (currentTheme === 'accessible') {
-            const fallbackTheme = localStorage.getItem('sulfur_theme') || 'light';
-            document.documentElement.setAttribute('data-theme', fallbackTheme);
+            // Возвращаем сохраненную ручную тему или определяем системную заново
+            const savedTheme = localStorage.getItem('sulfur_theme');
+            if (savedTheme) {
+                applyTheme(savedTheme);
+            } else {
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(systemPrefersDark ? 'dark' : 'light');
+            }
             accessBtn.classList.remove('active');
         } else {
             document.documentElement.setAttribute('data-theme', 'accessible');
@@ -403,9 +413,14 @@
         }
     }
 
-    // Инициализация сохраненной темы
-    const savedTheme = localStorage.getItem('sulfur_theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    // Инициализация: Проверяем localStorage -> Проверяем систему
+    const savedTheme = localStorage.getItem('sulfur_theme');
+    if (savedTheme) {
+        applyTheme(savedTheme);
+    } else {
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(systemPrefersDark ? 'dark' : 'light');
+    }
 
     // СЛЕДОВАНИЕ ФОНА ЗА КУРСОРOM
     const bg = document.getElementById('ambientBg');
