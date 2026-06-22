@@ -3,34 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SULFUR — Application Terminal</title>
+    <title>SULFUR — Форма регистрации</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
         :root {
-            --bg-dark: #09090b;
+            --bg-main: #0b0b0d;
             --panel-bg: #121215;
-            --input-bg: #18181c;
-            --border-muted: #222227;
-            --border-focus: #ff6b00;
-            --accent-tactical: #ff6b00;
-            --text-main: #f4f4f5;
-            --text-muted: #71717a;
-            --error-color: #ef4444;
-            --success-color: #22c55e;
+            --input-bg: #16161a;
+            --border-default: #222226;
+            --rust-accent: #b53a1c;
+            --yellow-accent: #ffb700;
+            --text-main: #f4f4f7;
+            --text-muted: #6f6f78;
+            --error: #ef4444;
+            --success: #22c55e;
         }
 
         * {
             box-sizing: border-box;
-            cursor: none !important;
             font-family: 'Inter', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
+            background-color: var(--bg-main);
             margin: 0;
             padding: 40px 20px;
-            overflow-x: hidden;
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -39,385 +37,262 @@
             position: relative;
         }
 
-        /* ИНТЕРАКТИВНЫЙ ФОН */
         #bgCanvas {
             position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            z-index: 1;
-            pointer-events: none;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 1; pointer-events: none;
         }
 
-        .screen-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.15) 50%);
-            background-size: 100% 4px;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        /* МИНИМАЛИСТИЧНЫЙ КУРСОР */
-        .cursor-dot {
-            width: 4px; height: 4px;
-            background: var(--accent-tactical);
-            position: fixed; border-radius: 50%; z-index: 10000;
-            pointer-events: none; transform: translate(-50%, -50%);
-        }
-        .cursor-ring {
-            width: 26px; height: 26px;
-            border: 1px solid rgba(255, 107, 0, 0.3);
-            position: fixed; border-radius: 50%; z-index: 10000;
-            pointer-events: none; transform: translate(-50%, -50%);
-            transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1), height 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s;
-        }
-
-        /* ЭФФЕКТ КЛИКА */
-        .click-ripple {
-            position: fixed;
-            border: 1px solid var(--accent-tactical);
-            border-radius: 50%; pointer-events: none; z-index: 9998;
-            transform: translate(-50%, -50%);
-            animation: rippleEffect 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes rippleEffect {
-            0% { width: 0; height: 0; opacity: 0.8; }
-            100% { width: 50px; height: 50px; opacity: 0; }
-        }
-
-        /* СТРОГИЕ ПАНЕЛИ */
-        .panel-container {
-            width: 100%;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-muted);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
-            z-index: 5;
-        }
-
-        /* СТРАНИЦА АВТОРИЗАЦИИ */
+        /* ОКНО АВТОРИЗАЦИИ */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #060608;
+            background: #070709;
             display: flex; justify-content: center; align-items: center;
             z-index: 1000; padding: 20px;
-            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
 
-        .modal-overlay.collapse-out {
-            transform: translateY(-30px);
-            opacity: 0;
-            pointer-events: none;
+        .modal-overlay.hidden {
+            opacity: 0; transform: translateY(-10px); pointer-events: none;
         }
 
         .modal-content {
-            max-width: 420px;
-            width: 100%;
-            padding: 40px;
-            border-top: 2px solid var(--accent-tactical);
+            max-width: 440px; width: 100%; padding: 40px;
+            background: var(--panel-bg); border: 1px solid var(--border-default);
+            border-top: 2px solid var(--rust-accent);
         }
 
         .modal-content h3 {
-            font-size: 22px; font-weight: 600; margin: 0 0 10px 0;
-            letter-spacing: -0.5px; text-transform: uppercase;
+            font-size: 18px; font-weight: 600; margin: 0 0 10px 0;
+            text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .modal-content h3 span { color: var(--accent-tactical); }
-        .modal-content p { color: var(--text-muted); font-size: 13px; line-height: 1.6; margin: 0 0 30px 0; }
+        .modal-content p { color: var(--text-muted); font-size: 13px; line-height: 1.5; margin: 0 0 25px 0; }
 
-        /* ДЕКОРАТИВНАЯ ЛИНЕЙКА ТЕРМИНАЛА */
-        .terminal-header {
-            position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: var(--border-muted); overflow: hidden;
-        }
-        .terminal-line {
-            height: 100%; width: 30%;
-            background: var(--accent-tactical);
-            animation: scan 3s infinite linear;
-        }
-        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(350%); } }
-
-        /* ОСНОВНАЯ ФОРМА */
-        .form-container {
-            max-width: 600px;
-            padding: 50px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-            border-top: 2px solid var(--accent-tactical);
+        /* ОСНОВНОЙ ШИРОКИЙ КОНТЕЙНЕР */
+        .main-container {
+            width: 100%; max-width: 1100px; background: var(--panel-bg);
+            border: 1px solid var(--border-default); z-index: 5; opacity: 0;
+            transform: scale(0.99); transition: opacity 0.4s ease, transform 0.4s ease;
+            position: relative; padding: 50px;
         }
 
-        .form-container.active {
-            opacity: 1;
-            transform: translateY(0);
+        .main-container.active { opacity: 1; transform: scale(1); }
+
+        /* ВЕРХНЯЯ СТРОГАЯ ШАПКА */
+        .form-header {
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin-bottom: 40px; padding-bottom: 15px; border-bottom: 1px solid var(--border-default);
+        }
+        .form-header h2 { font-size: 22px; font-weight: 700; margin: 0; letter-spacing: -0.5px; text-transform: uppercase; }
+        .form-header h2 span { color: var(--rust-accent); }
+        .system-status { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; }
+        .system-status span { color: var(--yellow-accent); }
+
+        .terminal-header { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--border-default); overflow: hidden; }
+        .terminal-line { height: 100%; width: 15%; background: var(--rust-accent); animation: scan 5s infinite linear; }
+        @keyframes scan { 0% { transform: translateX(-100%); } 100% { transform: translateX(700%); } }
+
+        /* СЕКЦИИ И ПРОДУМАННАЯ СЕТКА */
+        .section { margin-bottom: 40px; }
+        .section-title {
+            font-size: 12px; font-weight: 600; text-transform: uppercase;
+            color: var(--yellow-accent); letter-spacing: 1px; margin-bottom: 25px;
         }
 
-        h2 {
-            font-size: 26px; font-weight: 700; text-transform: uppercase;
-            letter-spacing: -0.5px; margin: 0 0 40px 0; text-align: center;
-        }
-        h2 span { color: var(--accent-tactical); }
+        /* Варианты сеток для разных блоков */
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 25px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .full-width { display: grid; grid-template-columns: 1fr; gap: 25px; }
+        
+        .row { margin-bottom: 25px; }
+        .field { position: relative; }
 
-        /* СЕКЦИИ ФОРМЫ */
-        .section {
-            margin-bottom: 35px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        .form-container.active .section { opacity: 1; transform: translateY(0); }
-        .form-container.active .section:nth-child(2) { transition-delay: 0.1s; }
-        .form-container.active .section:nth-child(3) { transition-delay: 0.2s; }
+        label { display: block; margin-bottom: 8px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
 
-        .section-header {
-            font-family: 'Share Tech Mono', monospace;
-            font-size: 12px; color: var(--accent-tactical);
-            letter-spacing: 2px; text-transform: uppercase;
-            margin-bottom: 20px; padding-bottom: 8px;
-            border-bottom: 1px solid var(--border-muted);
-        }
-
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .field { margin-bottom: 20px; position: relative; }
-
-        label {
-            display: block; margin-bottom: 6px;
-            font-size: 11px; text-transform: uppercase;
-            color: var(--text-muted); letter-spacing: 0.5px; font-weight: 600;
-        }
-
-        /* СТРОГИЕ ИНПУТЫ */
         input, select, textarea {
-            width: 100%; padding: 14px 16px;
-            background-color: var(--input-bg);
-            border: 1px solid var(--border-muted);
-            color: var(--text-main); font-size: 14px; outline: none;
-            border-radius: 0px;
-            transition: border-color 0.2s, background-color 0.2s;
+            width: 100%; padding: 14px 16px; background-color: var(--input-bg);
+            border: 1px solid var(--border-default); color: var(--text-main); font-size: 14px;
+            outline: none; border-radius: 0; transition: border-color 0.15s, background-color 0.15s;
         }
 
         input:focus, textarea:focus, select:focus {
-            border-color: var(--border-focus);
-            background-color: rgba(24, 24, 28, 0.7);
+            border-color: var(--rust-accent); background-color: #1a1a20;
         }
 
-        /* ПОДСКАЗКИ */
-        .hint {
-            font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4;
-            transition: color 0.2s;
-        }
+        .hint { font-size: 11px; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
         .field:focus-within .hint { color: var(--text-main); }
 
         /* ВАЛИДАЦИЯ */
-        input.validated-field:focus:not(.invalid-field) { border-color: var(--success-color); }
-        .invalid-field, .invalid-field:focus { border-color: var(--error-color) !important; }
-        .error-text { color: var(--error-color); font-size: 11px; margin-top: 6px; display: none; }
-        
-        select option { background: var(--bg-dark); color: var(--text-main); }
+        .invalid-field, .invalid-field:focus { border-color: var(--error) !important; }
+        .error-text { color: var(--error); font-size: 11px; margin-top: 6px; display: none; }
+        select option { background: var(--bg-main); color: var(--text-main); }
         textarea { resize: vertical; }
 
-        /* ПРАВИЛА И ЧЕКБОКС */
-        .rules-wrapper {
-            margin: 30px 0; padding: 20px;
-            background: rgba(24, 24, 28, 0.4);
-            border: 1px solid var(--border-muted);
-        }
-        .checkbox-container {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-size: 13px; color: var(--text-main);
-        }
-        .checkbox-container input { width: 16px; height: 16px; accent-color: var(--accent-tactical); cursor: none; }
+        .rules-wrapper { margin: 35px 0; padding: 20px; background: rgba(22, 22, 26, 0.4); border: 1px solid var(--border-default); }
+        .checkbox-container { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--text-main); }
+        .checkbox-container input { width: 16px; height: 16px; accent-color: var(--rust-accent); margin: 0; }
 
-        /* СТРОГАЯ КНОПКА */
+        /* КНОПКА ОТПРАВКИ */
         button {
-            width: 100%; padding: 16px;
-            background-color: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--border-muted);
-            font-size: 14px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px;
-            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+            width: 100%; padding: 16px; background-color: transparent; color: var(--text-main);
+            border: 1px solid var(--border-default); font-size: 13px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px; border-radius: 0;
+            transition: background-color 0.15s, border-color 0.15s, color 0.15s;
         }
-        button:hover {
-            background-color: var(--text-main);
-            border-color: var(--text-main);
-            color: var(--bg-dark);
-        }
-        button:disabled {
-            background-color: transparent; color: var(--text-muted);
-            border-color: var(--border-muted);
-        }
+        button:hover { background-color: var(--text-main); border-color: var(--text-main); color: var(--bg-main); }
+        button:disabled { background-color: transparent; color: var(--text-muted); border-color: var(--border-default); }
 
-        #status {
-            display: none; margin-top: 25px; padding: 15px; text-align: center;
-            font-size: 13px; font-weight: 500;
+        #status { display: none; margin-top: 25px; padding: 15px; text-align: center; font-size: 13px; }
+        .success { color: var(--success); border: 1px solid var(--success); background: rgba(34, 197, 94, 0.01); }
+        .error { color: var(--error); border: 1px solid var(--error); background: rgba(239, 68, 68, 0.01); }
+
+        /* АДАПТИВНОСТЬ ДЛЯ МОБИЛЬНЫХ УСТРОЙСТВ */
+        @media (max-width: 900px) {
+            .grid-3, .grid-2 { grid-template-columns: 1fr; gap: 20px; }
+            .main-container { padding: 30px 20px; }
+            .form-header { flex-direction: column; gap: 10px; }
         }
-        .success { color: var(--success-color); border: 1px solid var(--success-color); background: rgba(34, 197, 94, 0.02); }
-        .error { color: var(--error-color); border: 1px solid var(--error-color); background: rgba(239, 68, 68, 0.02); }
     </style>
 </head>
 <body>
 
-<div class="screen-overlay"></div>
 <canvas id="bgCanvas"></canvas>
 
-<div class="cursor-dot" id="cDot"></div>
-<div class="cursor-ring" id="cRing"></div>
-
 <div class="modal-overlay" id="discordAuth">
-    <div class="modal-content panel-container">
-        <h3>Gate <span>Verification</span></h3>
-        <p>Введите ваш точный логин Discord (Username). Новые никнеймы не содержат пробелов, заглавных букв и символа решетки (#).</p>
-        <div class="field" style="text-align: left;">
-            <label>Discord Username</label>
-            <input type="text" id="dcInput" placeholder="identity_username" autocomplete="off" spellcheck="false">
-            <div class="hint">От 2 до 32 символов: строчные латинские буквы, цифры, точки или подчёркивания.</div>
-            <div class="error-text" id="dcErrorText">Неверный формат идентификатора. Проверьте регистр и спецсимволы.</div>
+    <div class="modal-content">
+        <h3>Авторизация профиля</h3>
+        <p>Укажите корректное имя пользователя Discord для идентификации в базе данных.</p>
+        <div class="field">
+            <label>Имя пользователя Discord</label>
+            <input type="text" id="dcInput" placeholder="Пример: identity_username" autocomplete="off" spellcheck="false">
+            <div class="hint">Никнейм должен состоять из строчных латинских букв, цифр, точек или знаков подчеркивания (без символа #).</div>
+            <div class="error-text" id="dcErrorText">Введенный идентификатор не соответствует стандарту Discord.</div>
         </div>
-        <button type="button" id="dcBtn" style="margin-top: 10px;">Авторизовать сессию</button>
+        <button type="button" id="dcBtn" style="margin-top: 5px;">Продолжить</button>
     </div>
 </div>
 
-<div class="form-container panel-container" id="mainTerminal">
+<div class="main-container" id="mainTerminal">
     <div class="terminal-header"><div class="terminal-line" data-vector="==gc3lne3Vmc49iZv8WauU"></div></div>
-    <h2>Personnel Profile // <span>SULFUR</span></h2>
+    
+    <div class="form-header">
+        <h2>SULFUR // <span>Регистрационная анкета</span></h2>
+        <div class="system-status">Статус соединения: <span>Active</span></div>
+    </div>
     
     <form id="rustForm" novalidate>
-        <input type="hidden" name="Discord_Ник" id="hiddenDiscord">
+        <input type="hidden" name="Discord_Идентификатор" id="hiddenDiscord">
 
         <div class="section">
-            <div class="section-header">01 // Personal Information</div>
-            <div class="grid">
+            <div class="section-title">1. Персональная информация</div>
+            <div class="grid-3">
                 <div class="field">
-                    <label>Позывной / Имя</label>
-                    <input type="text" name="Имя_Ник" required autocomplete="off" placeholder="Идентификатор в игре">
-                    <div class="hint">Основной игровой никнейм или ваше имя.</div>
+                    <label>Имя или постоянный никнейм</label>
+                    <input type="text" name="Имя_Ник" required autocomplete="off" placeholder="Текстовый идентификатор">
+                    <div class="hint">Основное имя для внутренней коммуникации.</div>
                 </div>
                 <div class="field">
                     <label>Возраст</label>
-                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50" placeholder="Полных лет">
-                    <div class="hint">Допустимый критерий отбора: 14 - 50 лет.</div>
-                    <div class="error-text">Возрастной критерий не соответствует требованиям.</div>
-                </div>
-            </div>
-            <div class="field">
-                <label>Геолокация и часовой пояс</label>
-                <input type="text" name="Локация" required autocomplete="off" placeholder="Например: Спб, МСК">
-                <div class="hint">Страна, город и смещение относительно МСК.</div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-header">02 // Deployment Details</div>
-            <div class="field">
-                <label>Steam Profile URL</label>
-                <input type="url" name="Steam_Ссылка" id="steamInput" required autocomplete="off" placeholder="https://steamcommunity.com/profiles/...">
-                <div class="hint">Прямая ссылка на официальный профиль сообщества Steam.</div>
-                <div class="error-text">Неверная структура ссылки. Требуется валидный адрес Steam.</div>
-            </div>
-            <div class="grid">
-                <div class="field">
-                    <label>Игровое время (Часы в Rust)</label>
-                    <input type="number" name="Часы" id="hoursInput" required min="1" placeholder="Общий стаж">
-                    <div class="hint">Количество отработанных часов на аккаунте.</div>
-                    <div class="error-text">Укажите корректный игровой стаж.</div>
+                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50" placeholder="Число полных лет">
+                    <div class="hint">Критерий рассмотрения: от 14 до 50 лет.</div>
+                    <div class="error-text">Возраст не соответствует регламенту.</div>
                 </div>
                 <div class="field">
-                    <label>Стабильный онлайн (Сутки)</label>
-                    <input type="text" name="Онлайн" required placeholder="Например: 5-8 часов">
-                    <div class="hint">Среднее количество доступных часов в день.</div>
+                    <label>Регион проживания / Часовой пояс</label>
+                    <input type="text" name="Локация" required autocomplete="off" placeholder="Пример: Москва (МСК)">
+                    <div class="hint">Укажите текущий город и смещение времени.</div>
                 </div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-header">03 // Operational Profile</div>
-            <div class="field">
-                <label>Основная специализация</label>
-                <select name="Роль">
-                    <option value="Комбат">Комбат (Штурмовая группа)</option>
-                    <option value="Билдер">Билдер (Инженер фортификаций)</option>
-                    <option value="Фермер">Фермер (Агропромышленность / Чаи)</option>
-                    <option value="Фармер">Фармер (Ресурсодобыча)</option>
-                    <option value="Электрик">Электрик (Индустриальные схемы)</option>
-                </select>
-                <div class="hint">Ваша ключевая и наиболее эффективная роль в команде.</div>
+            <div class="section-title">2. Технические параметры профиля</div>
+            
+            <div class="row">
+                <div class="field full-width">
+                    <label>Ссылка на Steam-профиль</label>
+                    <input type="url" name="Steam_Ссылка" id="steamInput" required autocomplete="off" placeholder="https://steamcommunity.com/profiles/...">
+                    <div class="hint">Прямой адрес на официальный домен steamcommunity.com</div>
+                    <div class="error-text">Некорректный формат URL-адреса Steam.</div>
+                </div>
             </div>
-            <div class="field">
-                <label>Огневая подготовка</label>
-                <input type="text" name="Навыки_Оружия" required placeholder="Приоритетное оружие и рабочая дистанция">
-                <div class="hint">Стрелковые навыки: типы вооружения и эффективная дальность.</div>
+
+            <div class="grid-2">
+                <div class="field">
+                    <label>Количество часов в Rust</label>
+                    <input type="number" name="Часы" id="hoursInput" required min="1" placeholder="Общее время в игре">
+                    <div class="hint">Суммарное количество часов на основном аккаунте.</div>
+                    <div class="error-text">Введите корректное числовое значение.</div>
+                </div>
+                <div class="field">
+                    <label>Средний суточный онлайн</label>
+                    <input type="text" name="Онлайн" required placeholder="Пример: 5-7 часов в сутки">
+                    <div class="hint">Реальное количество времени, выделяемое на игровой процесс ежедневно.</div>
+                </div>
             </div>
-            <div class="field">
-                <label>Предыдущие формирования</label>
-                <textarea name="History_Кланов" rows="3" required placeholder="История состояний в других командах и причины расторжения отношений"></textarea>
-                <div class="hint">Кланы, в которых вы состояли ранее, и подробные причины ухода.</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">3. Опыт и игровая специализация</div>
+            
+            <div class="grid-2" style="margin-bottom: 25px;">
+                <div class="field">
+                    <label>Основное направление (Роль)</label>
+                    <select name="Роль">
+                        <option value="Комбат">Штурмовая группа (Combat)</option>
+                        <option value="Билдер">Проектирование и постройка баз (Builder)</option>
+                        <option value="Фермер">Обеспечение и производство (Farmer)</option>
+                        <option value="Фармер">Добыча базовых ресурсов (Miner)</option>
+                        <option value="Электрик">Автоматизация и индустриальные схемы (Electric)</option>
+                    </select>
+                    <div class="hint">Сфера, в которой вы обладаете максимальной компетенцией.</div>
+                </div>
+                <div class="field">
+                    <label>Приоритетное вооружение</label>
+                    <input type="text" name="Навыки_Оружия" required placeholder="Пример: АК-47, MP5, рабочая дистанция">
+                    <div class="hint">Типы оружия и эффективная дальность ведения боя.</div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="field full-width">
+                    <label>Перечень предыдущих команд</label>
+                    <textarea name="История_Кланов" rows="3" required placeholder="Укажите названия прошлых коллективов и объективные причины прекращения сотрудничества."></textarea>
+                    <div class="hint">Детальная информация об опыте нахождения в других игровых формированиях.</div>
+                </div>
             </div>
         </div>
 
         <div class="rules-wrapper">
             <label class="checkbox-container">
-                <input type="checkbox" name="Правила_Приняты" value="Да" required>
-                Я подтверждаю достоверность всех внесенных параметров
+                <input type="checkbox" name="Данные_Верны" value="Да" required>
+                Я подтверждаю достоверность всех указанных в настоящей анкете сведений.
             </label>
         </div>
 
-        <button type="submit" id="submitBtn">Отправить личное дело</button>
+        <button type="submit" id="submitBtn">Отправить анкету на рассмотрение</button>
         <div id="status"></div>
     </form>
 </div>
 
 <script>
-    // --- ПЛАВНЫЙ ИНТЕРАКТИВНЫЙ КУРСОР ---
-    const cDot = document.getElementById('cDot');
-    const cRing = document.getElementById('cRing');
-    let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
-
-    window.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX; mouseY = e.clientY;
-        cDot.style.left = mouseX + 'px'; cDot.style.top = mouseY + 'px';
-    });
-
-    function animateCursor() {
-        ringX += (mouseX - ringX) * 0.12;
-        ringY += (mouseY - ringY) * 0.12;
-        cRing.style.left = ringX + 'px'; cRing.style.top = ringY + 'px';
-        requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-
-    document.querySelectorAll('input, select, textarea, button').forEach(el => {
-        el.addEventListener('mouseenter', () => { 
-            cRing.style.width = '38px'; cRing.style.height = '38px'; 
-            cRing.style.borderColor = 'var(--accent-tactical)';
-        });
-        el.addEventListener('mouseleave', () => { 
-            cRing.style.width = '26px'; cRing.style.height = '26px'; 
-            cRing.style.borderColor = 'rgba(255, 107, 0, 0.3)';
-        });
-    });
-
-    window.addEventListener('click', (e) => {
-        const ripple = document.createElement('div');
-        ripple.className = 'click-ripple';
-        ripple.style.left = e.clientX + 'px'; ripple.style.top = e.clientY + 'px';
-        document.body.appendChild(ripple);
-        setTimeout(() => ripple.remove(), 400);
-    });
-
-    // --- СТРОГИЙ ЖИВОЙ ФОН CANVAS ---
+    // --- ДЕЛИКАТНЫЙ ЖИВОЙ ФОН CANVAS ---
     const canvas = document.getElementById('bgCanvas');
     const ctx = canvas.getContext('2d');
     let particles = [];
+    let mouseX = 0, mouseY = 0;
 
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas); resizeCanvas();
 
+    window.addEventListener('mousemove', (e) => { mouseX = e.clientX; mouseY = e.clientY; });
+
     class Particle {
         constructor() {
             this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 1.2 + 0.4;
-            this.speedX = (Math.random() - 0.5) * 0.3; this.speedY = (Math.random() - 0.5) * 0.3;
+            this.size = Math.random() * 0.9 + 0.3;
+            this.speedX = (Math.random() - 0.5) * 0.15; this.speedY = (Math.random() - 0.5) * 0.15;
         }
         update() {
             this.x += this.speedX; this.y += this.speedY;
@@ -426,45 +301,29 @@
             
             let dx = mouseX - this.x, dy = mouseY - this.y;
             let dist = Math.sqrt(dx * dx + dy * dy);
-            if (dist < 100) { this.x -= dx * 0.015; this.y -= dy * 0.015; }
+            if (dist < 80) { this.x -= dx * 0.008; this.y -= dy * 0.008; }
         }
         draw() {
-            ctx.fillStyle = 'rgba(255, 107, 0, 0.15)';
+            ctx.fillStyle = 'rgba(181, 58, 28, 0.1)';
             ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
         }
     }
 
-    for (let i = 0; i < 50; i++) particles.push(new Particle());
-
-    function drawLines() {
-        for (let i = 0; i < particles.length; i++) {
-            for (let j = i + 1; j < particles.length; j++) {
-                let dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
-                let dist = Math.sqrt(dx * dx + dy * dy);
-                if (dist < 90) {
-                    ctx.strokeStyle = `rgba(255, 107, 0, ${0.08 * (1 - dist/90)})`;
-                    ctx.lineWidth = 0.5; ctx.beginPath();
-                    ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
-                }
-            }
-        }
-    }
+    for (let i = 0; i < 35; i++) particles.push(new Particle());
 
     function animateBg() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        // Фоновая сетка деликатного оттенка
-        ctx.strokeStyle = 'rgba(255, 107, 0, 0.005)'; ctx.lineWidth = 1;
-        for (let x = 0; x < canvas.width; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
-        for (let y = 0; y < canvas.height; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
+        ctx.strokeStyle = 'rgba(181, 58, 28, 0.002)'; ctx.lineWidth = 1;
+        for (let x = 0; x < canvas.width; x += 70) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke(); }
+        for (let y = 0; y < canvas.height; y += 70) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke(); }
         
         particles.forEach(p => { p.update(); p.draw(); });
-        drawLines();
         requestAnimationFrame(animateBg);
     }
     animateBg();
 
-    // --- ЛОГИКА ФОРМЫ И БЕЗОПАСНОСТИ ---
+    // --- ЛОГИКА ОБРАБОТКИ ДАННЫХ И БЕЗОПАСНОСТИ ---
     const modal = document.getElementById("discordAuth");
     const dcInput = document.getElementById("dcInput");
     const dcBtn = document.getElementById("dcBtn");
@@ -486,9 +345,9 @@
 
     window.addEventListener("DOMContentLoaded", () => {
         dcInput.focus();
-        if (getCookie("sulfur_hud_cooldown")) {
-            submitBtn.disabled = true; submitBtn.innerText = "Сессия заблокирована";
-            statusBox.innerHTML = "Повторная подача личного дела возможна один раз в 15 минут.";
+        if (getCookie("sulfur_gate_cooldown")) {
+            submitBtn.disabled = true; submitBtn.innerText = "Доступ ограничен";
+            statusBox.innerHTML = "Повторная отправка документа заблокирована на 15 minutes.";
             statusBox.className = "error"; statusBox.style.display = "block";
         }
     });
@@ -501,8 +360,8 @@
         if (/^[a-z0-9_.]{2,32}$/.test(username) && !username.includes('..')) {
             dcError.style.display = "none"; dcInput.classList.remove("invalid-field");
             hiddenDiscord.value = username;
-            modal.classList.add("collapse-out");
-            setTimeout(() => { modal.style.display = "none"; terminal.classList.add("active"); }, 400);
+            modal.classList.add("hidden");
+            setTimeout(() => { modal.style.display = "none"; terminal.classList.add("active"); }, 300);
         } else {
             dcError.style.display = "block"; dcInput.classList.add("invalid-field");
         }
@@ -521,7 +380,7 @@
             inputElement.classList.add("invalid-field");
             if (errorDiv) errorDiv.style.display = "block";
         } else {
-            inputElement.classList.remove("invalid-field"); inputElement.classList.add("validated-field");
+            inputElement.classList.remove("invalid-field");
             if (errorDiv) errorDiv.style.display = "none";
         }
     }
@@ -532,7 +391,7 @@
 
     form.addEventListener("submit", function(e) {
         e.preventDefault();
-        if (getCookie("sulfur_hud_cooldown")) return;
+        if (getCookie("sulfur_gate_cooldown")) return;
 
         let hasErrors = false;
         if (!/^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/.test(steamInput.value.trim())) { showError(steamInput, true); hasErrors = true; }
@@ -541,12 +400,12 @@
         if (!form.checkValidity()) hasErrors = true;
 
         if (hasErrors) {
-            statusBox.innerHTML = "Обнаружены ошибки заполнения. Проверьте обязательные поля.";
+            statusBox.innerHTML = "Ошибка: заполните обязательные поля корректно.";
             statusBox.className = "error"; statusBox.style.display = "block";
             return;
         }
 
-        submitBtn.disabled = true; submitBtn.innerText = "Синхронизация данных...";
+        submitBtn.disabled = true; submitBtn.innerText = "Выполнение запроса...";
 
         try {
             // ============================================================================
@@ -573,15 +432,15 @@
                 headers: { 'Accept': 'application/json' }
             }).then(res => {
                 if (res.ok) {
-                    statusBox.innerHTML = "Личное дело успешно передано в архив формирования.";
+                    statusBox.innerHTML = "Анкета успешно зарегистрирована в архивной системе.";
                     statusBox.className = "success"; statusBox.style.display = "block";
                     form.reset(); submitBtn.style.display = "none";
-                    setCookie("sulfur_hud_cooldown", "active", 900);
+                    setCookie("sulfur_gate_cooldown", "active", 900);
                 } else { throw new Error(); }
             }).catch(() => {
-                statusBox.innerHTML = "Терминал не смог установить стабильное соединение. Повторите попытку.";
+                statusBox.innerHTML = "Ошибка сетевого соединения при передаче данных.";
                 statusBox.className = "error"; statusBox.style.display = "block";
-                submitBtn.disabled = false; submitBtn.innerText = "Отправить личное дело";
+                submitBtn.disabled = false; submitBtn.innerText = "Отправить анкету";
             });
         } catch(err) {
             submitBtn.disabled = false;
