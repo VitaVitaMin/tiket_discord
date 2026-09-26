@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>[KN] Knights Noble</title>
+    <title>Knights Noble [KN] — Рекрутинг</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -446,10 +446,20 @@
             box-shadow: 0 0 16px var(--accent-subtle);
         }
 
-        .role-icon {
-            font-size: 1.35rem;
-            margin-bottom: 6px;
-            display: block;
+        .role-header-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            margin-bottom: 3px;
+        }
+
+        .role-color-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: inline-block;
         }
 
         .role-name {
@@ -502,6 +512,55 @@
             color: var(--accent);
             font-weight: 600;
             transform: scale(1.02);
+        }
+
+        /* МУЛЬТИ-АККАУНТЫ STEAM */
+        .btn-add-steam {
+            background: transparent;
+            border: 1px dashed var(--border);
+            color: var(--accent);
+            padding: 9px 14px;
+            border-radius: var(--radius-md);
+            font-size: 0.78rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-add-steam:hover {
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+        }
+
+        .extra-steam-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-remove-steam {
+            background: #0d0f15;
+            border: 1px solid var(--border);
+            color: var(--text-tertiary);
+            width: 42px;
+            height: 42px;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.15s ease;
+        }
+
+        .btn-remove-steam:hover {
+            color: var(--danger);
+            border-color: var(--danger);
+            background: var(--danger-bg);
         }
 
         /* СОГЛАСИЕ */
@@ -698,7 +757,7 @@
                                 <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.54-3.13 8.78-7 9.87-3.87-1.09-7-5.33-7-9.87V6.3l7-3.12zM12 7a2 2 0 0 0-2 2v1h4V9a2 2 0 0 0-2-2zm-3 5v5h6v-5H9z"/>
                             </svg>
                         </div>
-                        <h2 class="gate-title">[KN] Knights Noble</h2>
+                        <h2 class="gate-title">Knights Noble [KN]</h2>
                         <p class="gate-desc">Введите ваш Discord логин для верификации. Офицеры клана свяжутся с вами для назначения собеседования.</p>
 
                         <div class="gate-input-row">
@@ -729,7 +788,7 @@
                                 </svg>
                             </div>
                             <div class="brand-text">
-                                <h1>[KN] Knights Noble</h1>
+                                <h1>Knights Noble [KN]</h1>
                                 <p>Рекрутинг в основной состав</p>
                             </div>
                         </div>
@@ -744,23 +803,37 @@
                         <!-- Скрытое поле Discord для передачи в Formspree -->
                         <input type="hidden" name="Discord" id="hiddenDiscord">
                         <!-- Скрытое поле выбранной роли -->
-                        <input type="hidden" name="Роль" id="hiddenRole" value="Combat">
+                        <input type="hidden" name="Роль" id="hiddenRole" value="Комбатер">
 
                         <!-- 01. Личные данные -->
                         <div class="section-header">01 // Личные данные</div>
                         <div class="grid-2">
                             <div class="field-box">
+                                <label for="nameInput">
+                                    <span>Ваше имя</span>
+                                    <span class="label-badge">реальное</span>
+                                </label>
+                                <div class="input-control-wrap">
+                                    <input type="text" name="Имя" id="nameInput" required placeholder="Например: Александр" autocomplete="off">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg">Укажите ваше имя</div>
+                            </div>
+
+                            <div class="field-box">
                                 <label for="nickInput">
-                                    <span>Позывной / Ник</span>
-                                    <span class="label-badge">в игре</span>
+                                    <span>Никнейм в игре</span>
+                                    <span class="label-badge">в Rust</span>
                                 </label>
                                 <div class="input-control-wrap">
                                     <input type="text" name="Никнейм" id="nickInput" required placeholder="Ваш игровой ник" autocomplete="off">
                                     <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
                                 </div>
-                                <div class="field-err-msg">Укажите позывной</div>
+                                <div class="field-err-msg">Укажите игровой никнейм</div>
                             </div>
+                        </div>
 
+                        <div class="grid-2">
                             <div class="field-box">
                                 <label for="ageInput">
                                     <span>Возраст</span>
@@ -772,29 +845,40 @@
                                 </div>
                                 <div class="field-err-msg" id="ageError">Возраст от 14 до 50 лет</div>
                             </div>
-                        </div>
 
-                        <div class="field-box">
-                            <label for="locationInput">Город / Часовой пояс</label>
-                            <div class="input-control-wrap">
-                                <input type="text" name="Часовой_пояс" id="locationInput" required placeholder="Пример: Москва (МСК), Екатеринбург, Варшава" autocomplete="off">
-                                <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            <div class="field-box">
+                                <label for="locationInput">
+                                    <span>Город / Часовой пояс</span>
+                                    <span class="label-badge">регион</span>
+                                </label>
+                                <div class="input-control-wrap">
+                                    <input type="text" name="Часовой_пояс" id="locationInput" required placeholder="Пример: Москва (МСК), Киев" autocomplete="off">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg">Укажите ваш часовой пояс</div>
                             </div>
-                            <div class="field-err-msg">Укажите ваш часовой пояс</div>
                         </div>
 
                         <!-- 02. Профиль Rust -->
                         <div class="section-header">02 // Профиль Rust</div>
-                        <div class="field-box">
+                        <div class="field-box" id="steamFieldBox">
                             <label for="steamInput">
                                 <span>Ссылка на Steam</span>
-                                <span class="label-badge">открытый профиль</span>
+                                <span class="label-badge">основной аккаунт</span>
                             </label>
                             <div class="input-control-wrap">
-                                <input type="url" name="Steam_профиль" id="steamInput" required placeholder="https://steamcommunity.com/id/..." autocomplete="off">
+                                <input type="url" name="Steam_профиль" id="steamInput" class="steam-link-input" required placeholder="https://steamcommunity.com/id/... (основной)" autocomplete="off">
                                 <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
                             </div>
                             <div class="field-err-msg" id="steamError">Введите корректную ссылку на профиль Steam</div>
+
+                            <!-- Дополнительные профили Steam -->
+                            <div id="extraSteamContainer" style="display:flex; flex-direction:column; gap:8px; margin-top:8px;"></div>
+
+                            <button type="button" class="btn-add-steam" id="btnAddSteam">
+                                <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                                <span>Добавить дополнительный Steam (твинк)</span>
+                            </button>
                         </div>
 
                         <div class="grid-2">
@@ -823,32 +907,52 @@
                         <!-- 03. Специализация -->
                         <div class="section-header">03 // Специализация и оружие</div>
                         
-                        <label style="margin-bottom:8px;">Основная роль в клане</label>
+                        <label style="margin-bottom:8px;">
+                            <span>Роль в клане</span>
+                            <span class="label-badge">можно выбрать несколько</span>
+                        </label>
                         <div class="role-grid">
-                            <div class="role-card active" data-role="Combat (Штурмовик)">
-                                <span class="role-icon">⚔️</span>
-                                <span class="role-name">Combat</span>
-                                <span class="role-sub">Штурмовик</span>
+                            <div class="role-card active" data-role="Комбатер">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#3b82f6;"></span>
+                                    <span class="role-name">Комбатер</span>
+                                </div>
+                                <span class="role-sub">ПВП / Стрельба</span>
                             </div>
-                            <div class="role-card" data-role="Builder (Архитектор)">
-                                <span class="role-icon">🏗️</span>
-                                <span class="role-name">Builder</span>
-                                <span class="role-sub">Архитектор</span>
+                            <div class="role-card" data-role="Коллер">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#ef4444;"></span>
+                                    <span class="role-name">Коллер</span>
+                                </div>
+                                <span class="role-sub">Рейд-лидер / IGL</span>
                             </div>
-                            <div class="role-card" data-role="Farmer (Снабженец)">
-                                <span class="role-icon">⛏️</span>
-                                <span class="role-name">Farmer</span>
-                                <span class="role-sub">Снабженец</span>
+                            <div class="role-card" data-role="Билдер">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#be185d;"></span>
+                                    <span class="role-name">Билдер</span>
+                                </div>
+                                <span class="role-sub">Постройка баз</span>
                             </div>
-                            <div class="role-card" data-role="Industry (Инженер)">
-                                <span class="role-icon">⚡</span>
-                                <span class="role-name">Industry</span>
-                                <span class="role-sub">Инженер</span>
+                            <div class="role-card" data-role="Электрик">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#ef4444;"></span>
+                                    <span class="role-name">Электрик</span>
+                                </div>
+                                <span class="role-sub">Индустрия / Сети</span>
                             </div>
-                            <div class="role-card" data-role="Pilot (Разведка)">
-                                <span class="role-icon">🚁</span>
-                                <span class="role-name">Recon</span>
-                                <span class="role-sub">Пилот</span>
+                            <div class="role-card" data-role="Фермер">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#10b981;"></span>
+                                    <span class="role-name">Фермер</span>
+                                </div>
+                                <span class="role-sub">Чай / Клоны / Агро</span>
+                            </div>
+                            <div class="role-card" data-role="Фармер">
+                                <div class="role-header-line">
+                                    <span class="role-color-dot" style="background:#94a3b8;"></span>
+                                    <span class="role-name">Фармер</span>
+                                </div>
+                                <span class="role-sub">Добыча руды / Сера</span>
                             </div>
                         </div>
 
@@ -876,7 +980,7 @@
                         <!-- Согласие -->
                         <label class="consent-card">
                             <input type="checkbox" id="rulesConfirm" required>
-                            <span>Подтверждаю достоверность всех данных, отсутствие активных банов и обязуюсь уважать регламент клана [KN] Knights Noble.</span>
+                            <span>Подтверждаю достоверность всех данных, отсутствие активных банов и обязуюсь уважать регламент клана Knights Noble [KN].</span>
                         </label>
 
                         <button type="submit" class="btn-action" id="submitBtn">
@@ -895,7 +999,7 @@
                             <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
                         </div>
                         <h2 class="success-title">Заявка успешно принята</h2>
-                        <p class="success-desc">Ваша анкета направлена офицерам <strong> [KN] Knights Noble</strong>. Ожидайте сообщения в Discord от руководства состава.</p>
+                        <p class="success-desc">Ваша анкета направлена офицерам <strong>Knights Noble [KN]</strong>. Ожидайте сообщения в Discord от руководства состава.</p>
 
                         <div class="ticket-code-badge" id="btnCopyTicket" title="Нажмите, чтобы скопировать">
                             <span class="ticket-code-num" id="ticketCode">#KN-0000</span>
@@ -974,7 +1078,7 @@
             if (val.startsWith("@")) val = val.substring(1);
 
             if (checkDiscordValidity(val)) {
-                hiddenDiscord.value = val;
+                hiddenDiscord.value = "@" + val;
                 activeDiscordTag.innerText = "@" + val;
 
                 // Smooth slide transition
@@ -983,7 +1087,7 @@
                 progressFill.style.width = "65%";
 
                 setTimeout(() => {
-                    document.getElementById("nickInput").focus();
+                    document.getElementById("nameInput").focus();
                 }, 150);
             } else {
                 discordTip.innerText = "Введите корректный логин Discord для продолжения";
@@ -1007,17 +1111,27 @@
             discordInput.focus();
         });
 
-        // Interactive Role Cards
+        // Interactive Role Cards (Мультивыбор ролей)
         const roleCards = document.querySelectorAll(".role-card");
         const hiddenRole = document.getElementById("hiddenRole");
 
+        function syncSelectedRoles() {
+            const activeRoles = Array.from(document.querySelectorAll(".role-card.active"))
+                .map(c => c.getAttribute("data-role"));
+            hiddenRole.value = activeRoles.join(", ");
+        }
+
         roleCards.forEach(card => {
             card.addEventListener("click", () => {
-                roleCards.forEach(c => c.classList.remove("active"));
-                card.classList.add("active");
-                hiddenRole.value = card.getAttribute("data-role");
+                card.classList.toggle("active");
+                const activeCount = document.querySelectorAll(".role-card.active").length;
+                if (activeCount === 0) {
+                    card.classList.add("active");
+                }
+                syncSelectedRoles();
             });
         });
+        syncSelectedRoles();
 
         // Weapon pills selection
         const weaponInput = document.getElementById("weaponInput");
@@ -1064,13 +1178,14 @@
         }
 
         // Live validation bindings
+        const nameInput = document.getElementById("nameInput");
         const nickInput = document.getElementById("nickInput");
         const locationInput = document.getElementById("locationInput");
         const steamInput = document.getElementById("steamInput");
         const onlineInput = document.getElementById("onlineInput");
         const ageInput = document.getElementById("ageInput");
 
-        [nickInput, locationInput, onlineInput, weaponInput].forEach(inp => {
+        [nameInput, nickInput, locationInput, onlineInput, weaponInput].forEach(inp => {
             inp.addEventListener("input", () => validateField(inp));
         });
 
@@ -1091,6 +1206,57 @@
                 if (icon) icon.classList.remove("visible");
             }
         });
+
+        // Мульти-аккаунты Steam
+        const btnAddSteam = document.getElementById("btnAddSteam");
+        const extraSteamContainer = document.getElementById("extraSteamContainer");
+
+        if (btnAddSteam && extraSteamContainer) {
+            btnAddSteam.addEventListener("click", () => {
+                const currentCount = extraSteamContainer.querySelectorAll(".extra-steam-row").length;
+                if (currentCount >= 4) {
+                    alert("Максимально можно добавить до 5 Steam профилей.");
+                    return;
+                }
+
+                const row = document.createElement("div");
+                row.className = "extra-steam-row";
+                row.innerHTML = `
+                    <div class="input-control-wrap" style="flex:1;">
+                        <input type="url" class="steam-link-input" placeholder="https://steamcommunity.com/id/... (твинк)" autocomplete="off">
+                        <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                    </div>
+                    <button type="button" class="btn-remove-steam" title="Удалить">
+                        <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
+                `;
+
+                const extraInput = row.querySelector(".steam-link-input");
+                const icon = row.querySelector(".input-status-icon");
+                const removeBtn = row.querySelector(".btn-remove-steam");
+
+                extraInput.addEventListener("input", () => {
+                    const val = extraInput.value.trim();
+                    if (!val) {
+                        extraInput.classList.remove("is-invalid");
+                        icon.classList.remove("visible");
+                    } else if (checkSteam(val)) {
+                        extraInput.classList.remove("is-invalid");
+                        icon.classList.add("visible");
+                    } else {
+                        extraInput.classList.add("is-invalid");
+                        icon.classList.remove("visible");
+                    }
+                });
+
+                removeBtn.addEventListener("click", () => {
+                    row.remove();
+                });
+
+                extraSteamContainer.appendChild(row);
+                extraInput.focus();
+            });
+        }
 
         ageInput.addEventListener("input", () => {
             const val = parseInt(ageInput.value, 10);
@@ -1118,6 +1284,7 @@
 
             let valid = true;
 
+            if (!validateField(nameInput)) valid = false;
             if (!validateField(nickInput)) valid = false;
 
             const age = parseInt(ageInput.value, 10);
@@ -1129,10 +1296,34 @@
 
             if (!validateField(locationInput)) valid = false;
 
-            if (!checkSteam(steamInput.value)) {
-                steamInput.classList.add("is-invalid");
+            // Steam validation (main + any extra twinks)
+            const allSteamInputs = Array.from(document.querySelectorAll(".steam-link-input"));
+            let steamValid = true;
+
+            allSteamInputs.forEach((inp, idx) => {
+                const val = inp.value.trim();
+                if (idx === 0) {
+                    if (!checkSteam(val)) {
+                        inp.classList.add("is-invalid");
+                        steamValid = false;
+                    } else {
+                        inp.classList.remove("is-invalid");
+                    }
+                } else if (val) {
+                    if (!checkSteam(val)) {
+                        inp.classList.add("is-invalid");
+                        steamValid = false;
+                    } else {
+                        inp.classList.remove("is-invalid");
+                    }
+                }
+            });
+
+            if (!steamValid) {
                 document.getElementById("steamError").style.display = "block";
                 valid = false;
+            } else {
+                document.getElementById("steamError").style.display = "none";
             }
 
             const h = parseInt(hoursInput.value, 10);
@@ -1176,6 +1367,8 @@
             `;
 
             const formData = new FormData(recruitForm);
+            const allValidSteams = allSteamInputs.map(inp => inp.value.trim()).filter(Boolean);
+            formData.set("Steam_профиль", allValidSteams.join(" , "));
 
             fetch(FORMSPREE_ENDPOINT, {
                 method: "POST",
