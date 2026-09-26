@@ -1,532 +1,1229 @@
 <!DOCTYPE html>
-<html lang="ru" data-theme="light">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SULFUR — Ticket System</title>
+    <title>Knights Noble [KN] — Рекрутинг</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-        /* ТЕМЫ ОФОРМЛЕНИЯ */
-        :root[data-theme="light"] {
-            --bg-main: #ffffff;
-            --bg-panel: #fafafa;
-            --border-color: #e4e4e7;
-            --text-main: #09090b;
-            --text-muted: #71717a;
-            --rust: #b53a1c;
-            --rust-hover: #942e14;
-            --yellow: #df9f00;
-            --bg-input: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.02);
-            --focus-ring: rgba(181, 58, 28, 0.15);
-            --bg-glow: rgba(181, 58, 28, 0.03);
-            --font-scale: 1;
-            --border-width: 1px;
-        }
-
-        :root[data-theme="dark"] {
-            --bg-main: #0d0d11;
-            --bg-panel: #16161e;
-            --border-color: #27273a;
-            --text-main: #f4f4f7;
-            --text-muted: #8e8e9f;
-            --rust: #e04e2b;
-            --rust-hover: #ff623d;
-            --yellow: #ffb700;
-            --bg-input: #111116;
-            --shadow: rgba(0, 0, 0, 0.2);
-            --focus-ring: rgba(224, 78, 43, 0.25);
-            --bg-glow: rgba(224, 78, 43, 0.04);
-            --font-scale: 1;
-            --border-width: 1px;
-        }
-
-        :root[data-theme="accessible"] {
-            --bg-main: #ffffff;
-            --bg-panel: #ffffff;
-            --border-color: #000000;
-            --text-main: #000000;
-            --text-muted: #000000;
-            --rust: #000000;
-            --rust-hover: #333333;
-            --yellow: #000000;
-            --bg-input: #ffffff;
-            --shadow: none;
-            --focus-ring: transparent;
-            --bg-glow: transparent;
-            --font-scale: 1.2;
-            --border-width: 2px;
+        :root {
+            --bg-base: #090a0f;
+            --surface: #11131a;
+            --surface-card: #151822;
+            --surface-hover: #1b1f2c;
+            --surface-active: #202534;
+            --border: #232736;
+            --border-hover: #343a4e;
+            --border-focus: #f59e0b;
+            --text: #f3f4f8;
+            --text-secondary: #949bb0;
+            --text-tertiary: #5d6479;
+            --accent: #f59e0b;
+            --accent-hover: #fbbf24;
+            --accent-subtle: rgba(245, 158, 11, 0.12);
+            --accent-glow: rgba(245, 158, 11, 0.25);
+            --danger: #ef4444;
+            --danger-bg: rgba(239, 68, 68, 0.1);
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         * {
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            -webkit-font-smoothing: antialiased;
         }
 
         body {
-            background-color: var(--bg-main);
-            margin: 0;
-            padding: 40px 20px;
-            color: var(--text-main);
+            background-color: var(--bg-base);
+            color: var(--text);
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            justify-content: center;
+            padding: 32px 16px;
             position: relative;
-            transition: background-color 0.2s ease, color 0.2s ease;
+            overflow-x: hidden;
         }
 
-        .bg-gradient {
+        /* Интерактивный фоновый свет за курсором */
+        .ambient-spotlight {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+            background: radial-gradient(650px circle at var(--mouse-x, 50%) var(--mouse-y, 40%), rgba(245, 158, 11, 0.07), transparent 70%);
+            transition: background 0.1s ease;
+        }
+
+        .layout-wrapper {
+            position: relative;
             z-index: 1;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), var(--bg-glow), transparent 50%);
+            width: 100%;
+            max-width: 660px;
+            margin: 0 auto;
+        }
+
+        /* ОСНОВНАЯ КАРТОЧКА */
+        .ticket-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.03);
+            overflow: hidden;
+            transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        /* ТОП-БАР С ПРОГРЕССОМ */
+        .progress-indicator-track {
+            height: 3px;
+            width: 100%;
+            background: var(--border);
+            position: relative;
+        }
+
+        .progress-indicator-fill {
+            height: 100%;
+            width: 25%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            box-shadow: 0 0 8px var(--accent-glow);
+            transition: width 0.4s var(--ease-out);
+        }
+
+        .card-inner {
+            padding: 36px 32px;
+        }
+
+        /* ШАПКА КАРТОЧКИ */
+        .brand-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 28px;
+        }
+
+        .brand-badge-group {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-shield {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-md);
+            background: linear-gradient(135deg, var(--accent), #b45309);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.25);
+            transition: transform 0.25s var(--ease-out);
+        }
+
+        .brand-shield svg {
+            width: 24px;
+            height: 24px;
+            fill: #000;
+        }
+
+        .brand-text h1 {
+            font-size: 1.18rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        .brand-text p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .brand-text p::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        /* ТЕГ АВТОРИЗОВАННОГО ПОЛЬЗОВАТЕЛЯ */
+        .user-discord-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 500;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        .user-discord-pill:hover {
+            border-color: var(--border-hover);
+        }
+
+        .btn-link-edit {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: underline;
+            padding: 0;
+            transition: color 0.15s ease;
+        }
+
+        .btn-link-edit:hover {
+            color: var(--text);
+        }
+
+        /* ЭТАП 1: ШАГ DISCORD */
+        .step-view {
+            transition: opacity 0.3s ease, transform 0.3s var(--ease-out);
+        }
+
+        .step-view.hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        .gate-center {
+            text-align: center;
+            padding: 16px 0 8px 0;
+        }
+
+        .gate-crest {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            background: var(--accent-subtle);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-subtle);
+        }
+
+        .gate-crest svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
+        }
+
+        .gate-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            margin-bottom: 8px;
+        }
+
+        .gate-desc {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            max-width: 440px;
+            margin: 0 auto 26px auto;
+        }
+
+        .gate-input-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto 10px auto;
+        }
+
+        .gate-addon-at {
+            width: 48px;
+            height: 48px;
+            background: #0d0e14;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--accent);
+            font-size: 1.15rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .gate-input-field {
+            flex: 1;
+            background: #0d0e14;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 1rem;
+            padding: 13px 16px;
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .gate-input-field:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+            background: #10121a;
+        }
+
+        .live-validation-tip {
+            font-size: 0.76rem;
+            color: var(--text-tertiary);
+            margin-top: 8px;
+            min-height: 18px;
+            transition: color 0.2s ease;
+        }
+
+        .live-validation-tip.error {
+            color: var(--danger);
+        }
+
+        .live-validation-tip.valid {
+            color: var(--success);
+        }
+
+        /* ПОЛЯ ФОРМЫ */
+        .section-header {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--accent);
+            margin: 26px 0 14px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .field-box {
+            margin-bottom: 16px;
+            position: relative;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .label-badge {
+            font-size: 0.7rem;
+            color: var(--text-tertiary);
+            font-weight: 400;
+        }
+
+        .input-control-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="url"],
+        textarea {
+            width: 100%;
+            background: #0d0f15;
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.9rem;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        input:hover, textarea:hover {
+            border-color: var(--border-hover);
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+            background: #11131c;
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .input-status-icon {
+            position: absolute;
+            right: 12px;
+            width: 18px;
+            height: 18px;
+            display: none;
             pointer-events: none;
         }
 
-        /* КНОПКА СМЕНЫ ТЕМЫ (СОЛНЦЕ / ЛУНА) */
-        .theme-toggle-btn {
-            background: var(--bg-input);
-            border: var(--border-width) solid var(--border-color);
-            color: var(--text-main);
-            width: 40px;
-            height: 40px;
-            border-radius: 6px;
+        .input-status-icon.visible {
+            display: block;
+        }
+
+        .field-err-msg {
+            font-size: 0.74rem;
+            color: var(--danger);
+            margin-top: 5px;
+            display: none;
+        }
+
+        .is-invalid {
+            border-color: var(--danger) !important;
+            box-shadow: 0 0 0 2px var(--danger-bg) !important;
+        }
+
+        /* ИНТЕРАКТИВНЫЙ ВЫБОР РОЛЕЙ (Вместо скучного select) */
+        .role-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .role-card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s var(--ease-out);
+            user-select: none;
+        }
+
+        .role-card:hover {
+            border-color: var(--border-hover);
+            background: var(--surface-hover);
+            transform: translateY(-2px);
+        }
+
+        .role-card.active {
+            border-color: var(--accent);
+            background: var(--accent-subtle);
+            box-shadow: 0 0 16px var(--accent-subtle);
+        }
+
+        .role-icon {
+            font-size: 1.35rem;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .role-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text);
+            display: block;
+        }
+
+        .role-sub {
+            font-size: 0.68rem;
+            color: var(--text-tertiary);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .role-card.active .role-name {
+            color: var(--accent);
+        }
+
+        /* ИНТЕРАКТИВНЫЕ ЧИПЫ ОРУЖИЯ */
+        .weapon-tags-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .weapon-pill {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            font-weight: 500;
+            padding: 6px 12px;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+        }
+
+        .weapon-pill:hover {
+            border-color: var(--border-hover);
+            color: var(--text);
+        }
+
+        .weapon-pill.selected {
+            background: var(--accent-subtle);
+            border-color: var(--accent);
+            color: var(--accent);
+            font-weight: 600;
+            transform: scale(1.02);
+        }
+
+        /* СОГЛАСИЕ */
+        .consent-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 14px 16px;
+            background: #0d0f15;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            margin: 24px 0;
+            cursor: pointer;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .consent-card:hover {
+            border-color: var(--border-hover);
+        }
+
+        .consent-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .consent-card span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+            user-select: none;
+        }
+
+        /* КНОПКИ */
+        .btn-action {
+            width: 100%;
+            background: var(--accent);
+            color: #000;
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.94rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            transition: background-color 0.15s, border-color 0.15s;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.2);
+            transition: all 0.2s var(--ease-out);
         }
-        .theme-toggle-btn:hover {
-            border-color: var(--text-main);
+
+        .btn-action:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3);
         }
-        .theme-toggle-btn .icon {
-            width: 18px;
-            height: 18px;
-            position: relative;
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* ЭКРАН УСПЕХА */
+        .success-box {
+            text-align: center;
+            padding: 24px 0 8px 0;
+        }
+
+        .success-checkmark {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-        }
-        
-        [data-theme="light"] .theme-toggle-btn .icon {
-            background: transparent;
-            box-shadow: 0 0 0 2px var(--text-main), 5px -5px 0 -1px var(--bg-input);
-            transform: translate(-3px, 3px);
-            border-radius: 50%;
-        }
-        [data-theme="dark"] .theme-toggle-btn .icon {
-            background: var(--yellow);
-            border-radius: 50%;
-        }
-        [data-theme="dark"] .theme-toggle-btn .icon::before {
-            content: ''; position: absolute; top: -4px; left: 7px; width: 4px; height: 26px; background: var(--yellow); border-radius: 2px; transform: rotate(45deg);
-        }
-
-        /* ФИКСИРОВАННАЯ КНОПКА ДЛЯ СЛАБОВИДЯЩИХ (СПРАВА СНИЗУ) */
-        .accessible-toggle {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 999;
-            background: var(--bg-panel);
-            border: var(--border-width) solid var(--border-color);
-            color: var(--text-main);
-            padding: 10px 16px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            box-shadow: 0 4px 12px var(--shadow);
-            width: auto;
-            transition: all 0.15s ease;
-        }
-        .accessible-toggle:hover {
-            border-color: var(--rust);
-            background: var(--bg-main);
-        }
-        .accessible-toggle.active {
-            background: #000000;
-            color: #ffffff;
-            border-color: #000000;
-        }
-
-        /* МОДАЛЬНОЕ ОКНО */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(4px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; padding: 20px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .modal-overlay.hidden {
-            opacity: 0; transform: translateY(5px); pointer-events: none;
-        }
-
-        .modal-content {
-            max-width: 380px; width: 100%; padding: 32px;
-            background: var(--bg-panel); 
-            border: var(--border-width) solid var(--border-color);
-            border-radius: 8px;
-            box-shadow: 0 8px 30px var(--shadow);
-        }
-
-        .modal-content h3 {
-            font-size: calc(18px * var(--font-scale)); font-weight: 600; margin: 0 0 6px 0;
-            letter-spacing: -0.3px;
-        }
-        
-        .modal-content p { color: var(--text-muted); font-size: calc(13px * var(--font-scale)); line-height: 1.4; margin: 0 0 20px 0; }
-
-        /* ОСНОВНОЙ КОНТЕЙНЕР */
-        .main-container {
-            width: 100%; max-width: 750px; background: var(--bg-panel);
-            border: var(--border-width) solid var(--border-color); border-radius: 8px; z-index: 5; opacity: 0;
-            transform: translateY(10px); transition: opacity 0.3s ease, transform 0.3s ease, background-color 0.2s, border-color 0.2s;
-            padding: 40px; box-shadow: 0 4px 24px var(--shadow);
-        }
-
-        .main-container.active { opacity: 1; transform: translateY(0); }
-
-        /* ШАПКА КЛАНА */
-        .form-header {
+            background: var(--success-bg);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px; padding-bottom: 20px; border-bottom: var(--border-width) solid var(--border-color);
-        }
-        
-        .form-header h2 { 
-            font-size: calc(22px * var(--font-scale)); font-weight: 600; margin: 0; 
-            letter-spacing: -0.5px; 
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            animation: popCheck 0.4s var(--ease-out);
         }
 
-        /* СЕКЦИИ */
-        .section { margin-bottom: 28px; }
-        .section-title {
-            font-size: calc(12px * var(--font-scale)); font-weight: 600; text-transform: uppercase;
-            color: var(--text-main); letter-spacing: 0.5px; margin-bottom: 16px;
-            border-left: 2px solid var(--rust); padding-left: 8px;
+        @keyframes popCheck {
+            0% { transform: scale(0.6); opacity: 0; }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-        .full-width { display: grid; grid-template-columns: 1fr; gap: 16px; }
-        .row { margin-bottom: 16px; }
-        .field { position: relative; }
-
-        label { display: block; margin-bottom: 6px; font-size: calc(12px * var(--font-scale)); color: var(--text-main); font-weight: 500; }
-
-        input, select, textarea {
-            width: 100%; padding: 10px 12px; background-color: var(--bg-input);
-            border: var(--border-width) solid var(--border-color); color: var(--text-main); font-size: calc(14px * var(--font-scale));
-            outline: none; border-radius: 6px; transition: border-color 0.12s, box-shadow 0.12s;
+        .success-checkmark svg {
+            width: 32px;
+            height: 32px;
+            fill: currentColor;
         }
 
-        input:focus, textarea:focus, select:focus {
-            border-color: var(--rust);
-            box-shadow: 0 0 0 3px var(--focus-ring);
+        .success-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            margin-bottom: 8px;
         }
 
-        .invalid-field, .invalid-field:focus { border-color: #dc2626 !important; box-shadow: none !important; }
-        .error-text { color: #dc2626; font-size: 12px; margin-top: 4px; display: none; }
-        textarea { resize: vertical; }
-
-        .rules-wrapper { margin: 24px 0; padding: 14px; background: var(--bg-input); border: var(--border-width) solid var(--border-color); border-radius: 6px; }
-        .checkbox-container { display: flex; align-items: center; gap: 10px; font-size: calc(13px * var(--font-scale)); color: var(--text-muted); }
-        .checkbox-container input { width: 16px; height: 16px; accent-color: var(--rust); cursor: pointer; margin: 0; }
-
-        /* КНОПКИ ОТПРАВКИ */
-        button[type="submit"], #dcBtn {
-            width: 100%; padding: 12px; background-color: var(--rust); color: #ffffff;
-            border: 1px solid transparent; font-size: calc(14px * var(--font-scale)); font-weight: 500;
-            border-radius: 6px; cursor: pointer; transition: background-color 0.12s, color 0.12s;
+        .success-desc {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            max-width: 440px;
+            margin: 0 auto 24px auto;
         }
-        button[type="submit"]:hover, #dcBtn:hover { 
-            background-color: var(--rust-hover); 
-            color: #ffffff;
-        }
-        button:disabled { background-color: var(--border-color); color: var(--text-muted); cursor: not-allowed; }
 
-        @media (max-width: 768px) {
-            .grid-2 { grid-template-columns: 1fr; gap: 14px; }
-            .main-container { padding: 20px; }
+        .ticket-code-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #0d0f15;
+            border: 1px dashed var(--accent);
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            margin-bottom: 28px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .ticket-code-badge:hover {
+            background: var(--surface-card);
+            border-color: var(--accent-hover);
+        }
+
+        .ticket-code-num {
+            font-family: monospace;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .ticket-code-copy-btn {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (max-width: 640px) {
+            .card-inner {
+                padding: 24px 18px;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .role-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .brand-header {
+                flex-wrap: wrap;
+            }
+            .user-discord-pill {
+                width: 100%;
+                justify-content: space-between;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="bg-gradient" id="ambientBg"></div>
+    <div class="ambient-spotlight" id="spotlight"></div>
 
-<!-- ФИКСИРОВАННЫЙ ОРГАН УПРАВЛЕНИЯ ДОСТУПНОСТЬЮ -->
-<button class="accessible-toggle" id="accessBtn" onclick="toggleAccessibility()">Версия для слабовидящих</button>
+    <div class="layout-wrapper">
+        <div class="ticket-card">
+            
+            <!-- Индикатор прогресса -->
+            <div class="progress-indicator-track">
+                <div class="progress-indicator-fill" id="progressFill"></div>
+            </div>
 
-<!-- АВТОРИЗАЦИЯ DISCORD -->
-<div class="modal-overlay" id="discordAuth">
-    <div class="modal-content">
-        <h3>Вход в систему</h3>
-        <p>Укажите ваш логин Discord для продолжения.</p>
-        <div class="field">
-            <label>Имя пользователя Discord</label>
-            <input type="text" id="dcInput" placeholder="username" autocomplete="off" spellcheck="false">
-            <div class="error-text" id="dcErrorText">Некорректный формат аккаунта.</div>
+            <div class="card-inner">
+                
+                <!-- ШАГ 1: АВТОРИЗАЦИЯ DISCORD -->
+                <div id="stepDiscord" class="step-view">
+                    <div class="gate-center">
+                        <div class="gate-crest">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.54-3.13 8.78-7 9.87-3.87-1.09-7-5.33-7-9.87V6.3l7-3.12zM12 7a2 2 0 0 0-2 2v1h4V9a2 2 0 0 0-2-2zm-3 5v5h6v-5H9z"/>
+                            </svg>
+                        </div>
+                        <h2 class="gate-title">Knights Noble [KN]</h2>
+                        <p class="gate-desc">Введите ваш Discord логин для верификации. Офицеры клана свяжутся с вами для назначения собеседования.</p>
+
+                        <div class="gate-input-row">
+                            <span class="gate-addon-at">@</span>
+                            <input type="text" class="gate-input-field" id="discordInput" placeholder="username" autocomplete="off" spellcheck="false" autofocus>
+                        </div>
+                        <div class="live-validation-tip" id="discordTip">Латиница, цифры, точки (от 2 до 32 символов)</div>
+
+                        <div style="max-width: 400px; margin: 20px auto 0 auto;">
+                            <button type="button" class="btn-action" id="btnContinueGate">
+                                <span>Продолжить</span>
+                                <svg style="width:16px;height:16px;fill:currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ШАГ 2: АНКЕТА ТИКЕТА -->
+                <div id="stepForm" class="step-view hidden">
+                    
+                    <div class="brand-header">
+                        <div class="brand-badge-group">
+                            <div class="brand-shield">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 2.18l7 3.12v4.7c0 4.54-3.13 8.78-7 9.87-3.87-1.09-7-5.33-7-9.87V6.3l7-3.12z"/>
+                                </svg>
+                            </div>
+                            <div class="brand-text">
+                                <h1>Knights Noble [KN]</h1>
+                                <p>Рекрутинг в основной состав</p>
+                            </div>
+                        </div>
+
+                        <div class="user-discord-pill">
+                            <span id="activeDiscordTag">@username</span>
+                            <button type="button" class="btn-link-edit" id="btnEditDiscord">изменить</button>
+                        </div>
+                    </div>
+
+                    <form id="recruitForm" novalidate>
+                        <!-- Скрытое поле Discord для передачи в Formspree -->
+                        <input type="hidden" name="Discord" id="hiddenDiscord">
+                        <!-- Скрытое поле выбранной роли -->
+                        <input type="hidden" name="Роль" id="hiddenRole" value="Combat">
+
+                        <!-- 01. Личные данные -->
+                        <div class="section-header">01 // Личные данные</div>
+                        <div class="grid-2">
+                            <div class="field-box">
+                                <label for="nickInput">
+                                    <span>Позывной / Ник</span>
+                                    <span class="label-badge">в игре</span>
+                                </label>
+                                <div class="input-control-wrap">
+                                    <input type="text" name="Никнейм" id="nickInput" required placeholder="Ваш игровой ник" autocomplete="off">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg">Укажите позывной</div>
+                            </div>
+
+                            <div class="field-box">
+                                <label for="ageInput">
+                                    <span>Возраст</span>
+                                    <span class="label-badge">14 - 50 лет</span>
+                                </label>
+                                <div class="input-control-wrap">
+                                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50" placeholder="18">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg" id="ageError">Возраст от 14 до 50 лет</div>
+                            </div>
+                        </div>
+
+                        <div class="field-box">
+                            <label for="locationInput">Город / Часовой пояс</label>
+                            <div class="input-control-wrap">
+                                <input type="text" name="Часовой_пояс" id="locationInput" required placeholder="Пример: Москва (МСК), Екатеринбург, Варшава" autocomplete="off">
+                                <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            </div>
+                            <div class="field-err-msg">Укажите ваш часовой пояс</div>
+                        </div>
+
+                        <!-- 02. Профиль Rust -->
+                        <div class="section-header">02 // Профиль Rust</div>
+                        <div class="field-box">
+                            <label for="steamInput">
+                                <span>Ссылка на Steam</span>
+                                <span class="label-badge">открытый профиль</span>
+                            </label>
+                            <div class="input-control-wrap">
+                                <input type="url" name="Steam_профиль" id="steamInput" required placeholder="https://steamcommunity.com/id/..." autocomplete="off">
+                                <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                            </div>
+                            <div class="field-err-msg" id="steamError">Введите корректную ссылку на профиль Steam</div>
+                        </div>
+
+                        <div class="grid-2">
+                            <div class="field-box">
+                                <label for="hoursInput">
+                                    <span>Часы в Rust</span>
+                                    <span class="label-badge" id="hoursTierBadge">0 ч.</span>
+                                </label>
+                                <div class="input-control-wrap">
+                                    <input type="number" name="Часы_в_Rust" id="hoursInput" required min="1" placeholder="Общее количество">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg" id="hoursError">Укажите количество часов</div>
+                            </div>
+
+                            <div class="field-box">
+                                <label for="onlineInput">Ежедневный онлайн</label>
+                                <div class="input-control-wrap">
+                                    <input type="text" name="Онлайн" id="onlineInput" required placeholder="5-7 часов / со старта вайпа">
+                                    <svg class="input-status-icon" viewBox="0 0 24 24"><path fill="#10b981" d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                                </div>
+                                <div class="field-err-msg">Укажите средний онлайн</div>
+                            </div>
+                        </div>
+
+                        <!-- 03. Специализация -->
+                        <div class="section-header">03 // Специализация и оружие</div>
+                        
+                        <label style="margin-bottom:8px;">Основная роль в клане</label>
+                        <div class="role-grid">
+                            <div class="role-card active" data-role="Combat (Штурмовик)">
+                                <span class="role-icon">⚔️</span>
+                                <span class="role-name">Combat</span>
+                                <span class="role-sub">Штурмовик</span>
+                            </div>
+                            <div class="role-card" data-role="Builder (Архитектор)">
+                                <span class="role-icon">🏗️</span>
+                                <span class="role-name">Builder</span>
+                                <span class="role-sub">Архитектор</span>
+                            </div>
+                            <div class="role-card" data-role="Farmer (Снабженец)">
+                                <span class="role-icon">⛏️</span>
+                                <span class="role-name">Farmer</span>
+                                <span class="role-sub">Снабженец</span>
+                            </div>
+                            <div class="role-card" data-role="Industry (Инженер)">
+                                <span class="role-icon">⚡</span>
+                                <span class="role-name">Industry</span>
+                                <span class="role-sub">Инженер</span>
+                            </div>
+                            <div class="role-card" data-role="Pilot (Разведка)">
+                                <span class="role-icon">🚁</span>
+                                <span class="role-name">Recon</span>
+                                <span class="role-sub">Пилот</span>
+                            </div>
+                        </div>
+
+                        <div class="field-box">
+                            <label for="weaponInput">Предпочитаемое вооружение</label>
+                            <input type="text" name="Оружие" id="weaponInput" required placeholder="АК-47, MP5, Bolty..." autocomplete="off">
+                            <div class="weapon-tags-row">
+                                <span class="weapon-pill" data-gun="AK-47">АК-47</span>
+                                <span class="weapon-pill" data-gun="MP5-A4">MP5-A4</span>
+                                <span class="weapon-pill" data-gun="LR-300">LR-300</span>
+                                <span class="weapon-pill" data-gun="Bolt Action">Болт</span>
+                                <span class="weapon-pill" data-gun="L96">L96</span>
+                                <span class="weapon-pill" data-gun="Custom SMG">Custom SMG</span>
+                                <span class="weapon-pill" data-gun="Rocket Launcher">Ракетница</span>
+                            </div>
+                            <div class="field-err-msg">Укажите ваше любимое оружие</div>
+                        </div>
+
+                        <div class="field-box">
+                            <label for="experienceInput">Прошлые кланы и причины ухода</label>
+                            <textarea name="Опыт_в_кланах" id="experienceInput" rows="3" required placeholder="В каких командах состояли и почему покинули?"></textarea>
+                            <div class="field-err-msg">Заполните информацию об опыте</div>
+                        </div>
+
+                        <!-- Согласие -->
+                        <label class="consent-card">
+                            <input type="checkbox" id="rulesConfirm" required>
+                            <span>Подтверждаю достоверность всех данных, отсутствие активных банов и обязуюсь уважать регламент клана Knights Noble [KN].</span>
+                        </label>
+
+                        <button type="submit" class="btn-action" id="submitBtn">
+                            <span>Отправить заявку</span>
+                            <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- ШАГ 3: ЭКРАН УСПЕХА -->
+                <div id="stepSuccess" class="step-view hidden">
+                    <div class="success-box">
+                        <div class="success-checkmark">
+                            <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>
+                        </div>
+                        <h2 class="success-title">Заявка успешно принята</h2>
+                        <p class="success-desc">Ваша анкета направлена офицерам <strong>Knights Noble [KN]</strong>. Ожидайте сообщения в Discord от руководства состава.</p>
+
+                        <div class="ticket-code-badge" id="btnCopyTicket" title="Нажмите, чтобы скопировать">
+                            <span class="ticket-code-num" id="ticketCode">#KN-0000</span>
+                            <span class="ticket-code-copy-btn">
+                                <svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+                                </svg>
+                                <span>копировать</span>
+                            </span>
+                        </div>
+
+                        <div style="max-width: 240px; margin: 0 auto;">
+                            <button type="button" class="btn-action" onclick="location.reload()">
+                                <span>Новая заявка</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <button type="button" id="dcBtn" style="margin-top: 16px;">Продолжить</button>
     </div>
-</div>
 
-<!-- ОСНОВНАЯ ПАНЕЛЬ TICKET -->
-<div class="main-container" id="mainTerminal">
-    <div class="form-header">
-        <h2>Clan Sulfur Ticket</h2>
-        
-        <!-- КНОПКА СМЕНЫ ТЕМЫ -->
-        <button class="theme-toggle-btn" onclick="toggleTheme()" title="Переключить тему">
-            <div class="icon"></div>
-        </button>
-    </div>
-    
-    <form id="rustForm" novalidate>
-        <input type="hidden" name="Discord_Идентификатор" id="hiddenDiscord">
+    <script>
+        const FORMSPREE_ENDPOINT = "https://formspree.io/f/xrewzywr";
 
-        <div class="section">
-            <div class="section-title">Основная информация</div>
-            <div class="grid-2">
-                <div class="field">
-                    <label>Имя или никнейм</label>
-                    <input type="text" name="Имя_Ник" required autocomplete="off" placeholder="Ваш ник">
-                </div>
-                <div class="field">
-                    <label>Возраст</label>
-                    <input type="number" name="Возраст" id="ageInput" required min="14" max="50" placeholder="Полных лет">
-                    <div class="error-text">Допустимый диапазон: 14 - 50 лет.</div>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 16px;">
-                <div class="field full-width">
-                    <label>Город / Часовой пояс</label>
-                    <input type="text" name="Локация" required autocomplete="off" placeholder="Пример: Москва (МСК)">
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Игровой профиль</div>
-            <div class="row">
-                <div class="field full-width">
-                    <label>Ссылка на Steam</label>
-                    <input type="url" name="Steam_Ссылка" id="steamInput" required autocomplete="off" placeholder="https://steamcommunity.com/id/...">
-                    <div class="error-text">Неверный формат ссылки.</div>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="field">
-                    <label>Часы в Rust</label>
-                    <input type="number" name="Часы" id="hoursInput" required min="1" placeholder="Общее количество часов">
-                    <div class="error-text">Введите корректное число.</div>
-                </div>
-                <div class="field">
-                    <label>Ежедневный онлайн</label>
-                    <input type="text" name="Онлайн" required placeholder="Пример: 5 часов в день">
-                </div>
-            </div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">Специализация и опыт</div>
-            <div class="grid-2" style="margin-bottom: 16px;">
-                <div class="field">
-                    <label>Основная роль</label>
-                    <select name="Роль">
-                        <option value="Комбат">Combat (Штурмовик)</option>
-                        <option value="Билдер">Builder (Строитель)</option>
-                        <option value="Фермер">Farmer (Обеспечение)</option>
-                        <option value="Фармер">Miner (Добыча)</option>
-                        <option value="Электрик">Electric (Индустрия)</option>
-                    </select>
-                </div>
-                <div class="field">
-                    <label>Предпочитаемое оружие</label>
-                    <input type="text" name="Навыки_Оружия" required placeholder="Пример: АК-47, MP5">
-                </div>
-            </div>
-            <div class="row">
-                <div class="field full-width">
-                    <label>Прошлые команды и причины ухода</label>
-                    <textarea name="История_Кланов" rows="3" required placeholder="Напишите краткую историю вашего опыта в других кланах."></textarea>
-                </div>
-            </div>
-        </div>
-
-        <div class="rules-wrapper">
-            <label class="checkbox-container">
-                <input type="checkbox" required>
-                Указанные данные являются верными и актуальными.
-            </label>
-        </div>
-
-        <button type="submit" id="submitBtn">Отправить тикет</button>
-    </form>
-</div>
-
-<script>
-    const API_URL = "https://example.com/api/ticket";
-
-    // УПРАВЛЕНИЕ ТЕМАМИ С УЧЕТОМ СИСТЕМНЫХ НАСТРОЕК
-    function applyTheme(themeName) {
-        document.documentElement.setAttribute('data-theme', themeName);
-        if (themeName !== 'accessible') {
-            localStorage.setItem('sulfur_theme', themeName);
-            document.getElementById('accessBtn').classList.remove('active');
-        }
-    }
-
-    function toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'accessible') return;
-        
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-        applyTheme(newTheme);
-    }
-
-    function toggleAccessibility() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        const accessBtn = document.getElementById('accessBtn');
-        
-        if (currentTheme === 'accessible') {
-            // Возвращаем сохраненную ручную тему или определяем системную заново
-            const savedTheme = localStorage.getItem('sulfur_theme');
-            if (savedTheme) {
-                applyTheme(savedTheme);
-            } else {
-                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                applyTheme(systemPrefersDark ? 'dark' : 'light');
-            }
-            accessBtn.classList.remove('active');
-        } else {
-            document.documentElement.setAttribute('data-theme', 'accessible');
-            accessBtn.classList.add('active');
-        }
-    }
-
-    // Инициализация: Проверяем localStorage -> Проверяем систему
-    const savedTheme = localStorage.getItem('sulfur_theme');
-    if (savedTheme) {
-        applyTheme(savedTheme);
-    } else {
-        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        applyTheme(systemPrefersDark ? 'dark' : 'light');
-    }
-
-    // СЛЕДОВАНИЕ ФОНА ЗА КУРСОРOM
-    const bg = document.getElementById('ambientBg');
-    window.addEventListener('mousemove', (e) => {
-        const x = (e.clientX / window.innerWidth) * 100;
-        const y = (e.clientY / window.innerHeight) * 100;
-        bg.style.setProperty('--mouse-x', `${x}%`);
-        bg.style.setProperty('--mouse-y', `${y}%`);
-    });
-
-    // МОДАЛКА DISCORD
-    const modal = document.getElementById("discordAuth");
-    const dcInput = document.getElementById("dcInput");
-    const dcBtn = document.getElementById("dcBtn");
-    const dcError = document.getElementById("dcErrorText");
-    const terminal = document.getElementById("mainTerminal");
-    const form = document.getElementById("rustForm");
-    const hiddenDiscord = document.getElementById("hiddenDiscord");
-    const submitBtn = document.getElementById("submitBtn");
-
-    function setCookie(name, value, seconds) {
-        const date = new Date(); date.setTime(date.getTime() + (seconds * 1000));
-        document.cookie = name + "=" + value + "; expires=" + date.toUTCString() + "; path=/; SameSite=Strict";
-    }
-    function getCookie(name) {
-        const matches = document.cookie.match(new RegExp("(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-        dcInput.focus();
-        if (getCookie("sulfur_gate_cooldown")) {
-            submitBtn.disabled = true; submitBtn.innerText = "Доступ заблокирован (15 мин)";
-        }
-    });
-
-    dcInput.addEventListener("input", () => { dcInput.value = dcInput.value.toLowerCase().replace(/\s+/g, ''); });
-
-    function checkDiscordAuth() {
-        let username = dcInput.value.trim();
-        if (username.startsWith('@')) username = username.substring(1);
-        
-        if (/^[a-z0-9_.]{2,32}$/.test(username) && !username.includes('..')) {
-            dcError.style.display = "none"; dcInput.classList.remove("invalid-field");
-            hiddenDiscord.value = username;
-            modal.classList.add("hidden");
-            setTimeout(() => { modal.style.display = "none"; terminal.classList.add("active"); }, 200);
-        } else {
-            dcError.style.display = "block"; dcInput.classList.add("invalid-field");
-        }
-    }
-
-    dcBtn.addEventListener("click", checkDiscordAuth);
-    dcInput.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); checkDiscordAuth(); } });
-
-    // ВАЛИДАЦИЯ
-    const steamInput = document.getElementById("steamInput");
-    const ageInput = document.getElementById("ageInput");
-    const hoursInput = document.getElementById("hoursInput");
-
-    function showError(inputElement, show) {
-        const errorDiv = inputElement.parentElement.querySelector(".error-text");
-        if (show) {
-            inputElement.classList.add("invalid-field");
-            if (errorDiv) errorDiv.style.display = "block";
-        } else {
-            inputElement.classList.remove("invalid-field");
-            if (errorDiv) errorDiv.style.display = "none";
-        }
-    }
-
-    steamInput.addEventListener("input", () => { showError(steamInput, !/^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/.test(steamInput.value.trim())); });
-    ageInput.addEventListener("input", () => { const age = parseInt(ageInput.value, 10); showError(ageInput, isNaN(age) || age < 14 || age > 50); });
-    hoursInput.addEventListener("input", () => { const hours = parseInt(hoursInput.value, 10); showError(hoursInput, isNaN(hours) || hours < 1); });
-
-    // ОТПРАВКА С ФОРМИРОВАНИЕМ ДАННЫХ
-    form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        if (getCookie("sulfur_gate_cooldown")) return;
-
-        let hasErrors = false;
-        if (!/^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/.test(steamInput.value.trim())) { showError(steamInput, true); hasErrors = true; }
-        const age = parseInt(ageInput.value, 10); if (isNaN(age) || age < 14 || age > 50) { showError(ageInput, true); hasErrors = true; }
-        const hours = parseInt(hoursInput.value, 10); if (isNaN(hours) || hours < 1) { showError(hoursInput, true); hasErrors = true; }
-        if (!form.checkValidity()) hasErrors = true;
-
-        if (hasErrors) return;
-
-        submitBtn.disabled = true; submitBtn.innerText = "Отправка...";
-
-        fetch(API_URL, {
-            method: "POST",
-            body: new FormData(form),
-            headers: { 'Accept': 'application/json' }
-        }).then(res => {
-            if (res.ok) {
-                submitBtn.innerText = "Отправлено";
-                form.reset();
-                setCookie("sulfur_gate_cooldown", "active", 900);
-            } else { throw new Error(); }
-        }).catch(() => {
-            alert("Ошибка соединения.");
-            submitBtn.disabled = false; submitBtn.innerText = "Отправить тикет";
+        // Spotlight effect
+        const spotlight = document.getElementById("spotlight");
+        window.addEventListener("mousemove", (e) => {
+            spotlight.style.setProperty("--mouse-x", e.clientX + "px");
+            spotlight.style.setProperty("--mouse-y", e.clientY + "px");
         });
-    });
-</script>
 
+        // Steps navigation
+        const stepDiscord = document.getElementById("stepDiscord");
+        const stepForm = document.getElementById("stepForm");
+        const stepSuccess = document.getElementById("stepSuccess");
+        const progressFill = document.getElementById("progressFill");
+
+        const discordInput = document.getElementById("discordInput");
+        const discordTip = document.getElementById("discordTip");
+        const btnContinueGate = document.getElementById("btnContinueGate");
+        const activeDiscordTag = document.getElementById("activeDiscordTag");
+        const btnEditDiscord = document.getElementById("btnEditDiscord");
+        const hiddenDiscord = document.getElementById("hiddenDiscord");
+
+        function checkDiscordValidity(val) {
+            let s = val.trim();
+            if (s.startsWith("@")) s = s.substring(1);
+            return /^[a-z0-9_.]{2,32}$/i.test(s) && !s.includes("..");
+        }
+
+        // Live input validation feedback on discord input
+        discordInput.addEventListener("input", () => {
+            let val = discordInput.value.trim();
+            if (val.startsWith("@")) {
+                discordInput.value = val.substring(1);
+                val = discordInput.value.trim();
+            }
+            if (!val) {
+                discordTip.innerText = "Латиница, цифры, точки (от 2 до 32 символов)";
+                discordTip.className = "live-validation-tip";
+                return;
+            }
+            if (checkDiscordValidity(val)) {
+                discordTip.innerText = "✓ Формат логина корректен";
+                discordTip.className = "live-validation-tip valid";
+            } else {
+                discordTip.innerText = "✕ Недопустимый формат (без пробелов, @ и спецсимволов)";
+                discordTip.className = "live-validation-tip error";
+            }
+        });
+
+        function proceedToForm() {
+            let val = discordInput.value.trim().toLowerCase().replace(/\s+/g, '');
+            if (val.startsWith("@")) val = val.substring(1);
+
+            if (checkDiscordValidity(val)) {
+                hiddenDiscord.value = val;
+                activeDiscordTag.innerText = "@" + val;
+
+                // Smooth slide transition
+                stepDiscord.classList.add("hidden");
+                stepForm.classList.remove("hidden");
+                progressFill.style.width = "65%";
+
+                setTimeout(() => {
+                    document.getElementById("nickInput").focus();
+                }, 150);
+            } else {
+                discordTip.innerText = "Введите корректный логин Discord для продолжения";
+                discordTip.className = "live-validation-tip error";
+                discordInput.focus();
+            }
+        }
+
+        btnContinueGate.addEventListener("click", proceedToForm);
+        discordInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                proceedToForm();
+            }
+        });
+
+        btnEditDiscord.addEventListener("click", () => {
+            stepForm.classList.add("hidden");
+            stepDiscord.classList.remove("hidden");
+            progressFill.style.width = "25%";
+            discordInput.focus();
+        });
+
+        // Interactive Role Cards
+        const roleCards = document.querySelectorAll(".role-card");
+        const hiddenRole = document.getElementById("hiddenRole");
+
+        roleCards.forEach(card => {
+            card.addEventListener("click", () => {
+                roleCards.forEach(c => c.classList.remove("active"));
+                card.classList.add("active");
+                hiddenRole.value = card.getAttribute("data-role");
+            });
+        });
+
+        // Weapon pills selection
+        const weaponInput = document.getElementById("weaponInput");
+        const weaponPills = document.querySelectorAll(".weapon-pill");
+
+        weaponPills.forEach(pill => {
+            pill.addEventListener("click", () => {
+                pill.classList.toggle("selected");
+                const selected = Array.from(document.querySelectorAll(".weapon-pill.selected")).map(p => p.getAttribute("data-gun"));
+                weaponInput.value = selected.join(", ");
+                validateField(weaponInput);
+            });
+        });
+
+        // Hours tier badge update
+        const hoursInput = document.getElementById("hoursInput");
+        const hoursTierBadge = document.getElementById("hoursTierBadge");
+
+        hoursInput.addEventListener("input", () => {
+            const h = parseInt(hoursInput.value, 10);
+            if (!isNaN(h) && h > 0) {
+                if (h < 1000) hoursTierBadge.innerText = `${h}ч • Рекрут`;
+                else if (h < 2500) hoursTierBadge.innerText = `${h}ч • Боец`;
+                else if (h < 5000) hoursTierBadge.innerText = `${h}ч • Ветеран`;
+                else hoursTierBadge.innerText = `${h}ч • Элита KN`;
+            } else {
+                hoursTierBadge.innerText = "0 ч.";
+            }
+        });
+
+        // Helper live field validator
+        function validateField(inputEl) {
+            const statusIcon = inputEl.parentElement.querySelector(".input-status-icon");
+            const isInvalid = !inputEl.value.trim();
+
+            if (isInvalid) {
+                inputEl.classList.add("is-invalid");
+                if (statusIcon) statusIcon.classList.remove("visible");
+            } else {
+                inputEl.classList.remove("is-invalid");
+                if (statusIcon) statusIcon.classList.add("visible");
+            }
+            return !isInvalid;
+        }
+
+        // Live validation bindings
+        const nickInput = document.getElementById("nickInput");
+        const locationInput = document.getElementById("locationInput");
+        const steamInput = document.getElementById("steamInput");
+        const onlineInput = document.getElementById("onlineInput");
+        const ageInput = document.getElementById("ageInput");
+
+        [nickInput, locationInput, onlineInput, weaponInput].forEach(inp => {
+            inp.addEventListener("input", () => validateField(inp));
+        });
+
+        function checkSteam(url) {
+            return /^https:\/\/(www\.)?steamcommunity\.com\/(id|profiles)\/[a-zA-Z0-9_-]+\/?$/.test(url.trim());
+        }
+
+        steamInput.addEventListener("input", () => {
+            const icon = steamInput.parentElement.querySelector(".input-status-icon");
+            const err = document.getElementById("steamError");
+            if (checkSteam(steamInput.value)) {
+                steamInput.classList.remove("is-invalid");
+                err.style.display = "none";
+                if (icon) icon.classList.add("visible");
+            } else {
+                steamInput.classList.add("is-invalid");
+                err.style.display = "block";
+                if (icon) icon.classList.remove("visible");
+            }
+        });
+
+        ageInput.addEventListener("input", () => {
+            const val = parseInt(ageInput.value, 10);
+            const icon = ageInput.parentElement.querySelector(".input-status-icon");
+            const err = document.getElementById("ageError");
+            if (!isNaN(val) && val >= 14 && val <= 50) {
+                ageInput.classList.remove("is-invalid");
+                err.style.display = "none";
+                if (icon) icon.classList.add("visible");
+            } else {
+                ageInput.classList.add("is-invalid");
+                err.style.display = "block";
+                if (icon) icon.classList.remove("visible");
+            }
+        });
+
+        // Form submission
+        const recruitForm = document.getElementById("recruitForm");
+        const submitBtn = document.getElementById("submitBtn");
+        const ticketCode = document.getElementById("ticketCode");
+        const btnCopyTicket = document.getElementById("btnCopyTicket");
+
+        recruitForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+
+            let valid = true;
+
+            if (!validateField(nickInput)) valid = false;
+
+            const age = parseInt(ageInput.value, 10);
+            if (isNaN(age) || age < 14 || age > 50) {
+                ageInput.classList.add("is-invalid");
+                document.getElementById("ageError").style.display = "block";
+                valid = false;
+            }
+
+            if (!validateField(locationInput)) valid = false;
+
+            if (!checkSteam(steamInput.value)) {
+                steamInput.classList.add("is-invalid");
+                document.getElementById("steamError").style.display = "block";
+                valid = false;
+            }
+
+            const h = parseInt(hoursInput.value, 10);
+            if (isNaN(h) || h < 1) {
+                hoursInput.classList.add("is-invalid");
+                document.getElementById("hoursError").style.display = "block";
+                valid = false;
+            } else {
+                hoursInput.classList.remove("is-invalid");
+                document.getElementById("hoursError").style.display = "none";
+            }
+
+            if (!validateField(onlineInput)) valid = false;
+            if (!validateField(weaponInput)) valid = false;
+
+            const exp = document.getElementById("experienceInput");
+            if (!exp.value.trim()) {
+                exp.classList.add("is-invalid");
+                valid = false;
+            } else {
+                exp.classList.remove("is-invalid");
+            }
+
+            const rules = document.getElementById("rulesConfirm");
+            if (!rules.checked) {
+                rules.parentElement.style.borderColor = "var(--danger)";
+                valid = false;
+            } else {
+                rules.parentElement.style.borderColor = "var(--border)";
+            }
+
+            if (!valid) return;
+
+            // Submit
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `
+                <svg style="width:16px;height:16px;animation:spin 0.8s linear infinite;fill:currentColor" viewBox="0 0 24 24">
+                    <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+                </svg>
+                <span>Отправка заявки...</span>
+            `;
+
+            const formData = new FormData(recruitForm);
+
+            fetch(FORMSPREE_ENDPOINT, {
+                method: "POST",
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            }).then(res => {
+                if (res.ok) {
+                    const randomId = Math.floor(1000 + Math.random() * 9000);
+                    ticketCode.innerText = `#KN-${randomId}`;
+
+                    stepForm.classList.add("hidden");
+                    stepSuccess.classList.remove("hidden");
+                    progressFill.style.width = "100%";
+                } else {
+                    return res.json().then(data => {
+                        if (data && data.errors) {
+                            alert("Ошибка отправки: " + data.errors.map(err => err.message).join(", "));
+                        } else {
+                            throw new Error();
+                        }
+                    });
+                }
+            }).catch(() => {
+                alert("Ошибка связи с сервером приёма заявок. Проверьте интернет-соединение.");
+            }).finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `
+                    <span>Отправить заявку</span>
+                    <svg style="width:18px;height:18px;fill:currentColor" viewBox="0 0 24 24">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                `;
+            });
+        });
+
+        // Copy ticket code
+        btnCopyTicket.addEventListener("click", () => {
+            navigator.clipboard.writeText(ticketCode.innerText).then(() => {
+                const copyText = btnCopyTicket.querySelector(".ticket-code-copy-btn span");
+                const originalText = copyText.innerText;
+                copyText.innerText = "скопировано!";
+                copyText.style.color = "var(--success)";
+                setTimeout(() => {
+                    copyText.innerText = originalText;
+                    copyText.style.color = "";
+                }, 1800);
+            });
+        });
+    </script>
 </body>
 </html>
